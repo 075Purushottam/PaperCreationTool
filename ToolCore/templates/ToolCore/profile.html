@@ -1,0 +1,251 @@
+{% load static%}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Profile</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: fit-content;
+            background-color: #f1f1f1;
+        }
+
+        .left-part{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .profile {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width:80%;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .profile-pic {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f9f9f9;
+        }
+        .profile-pic div{
+            width: 50%;
+        }
+        .profile-pic img {
+            width: 25%;
+            border-radius: 50%;
+        }
+
+        .profile-info {
+            flex-basis: 100%;
+        }
+
+        .profile-info h2 {
+            margin-top: 0;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .profile-info p {
+            margin: 15px 5px;
+        }
+
+        .personal-info {
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .personal-info h3 {
+            margin-top: 0;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .personal-info p {
+            margin: 8px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+
+        .paper-section {
+            margin-top: 20px;
+        }
+
+        .paper-section h3 {
+            margin-top: 0;
+            font-size: 18px;
+        }
+
+        .paper-section .paper-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 0;
+            margin: 0;
+        }
+
+        .paper-section .paper-list {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            text-align: center;
+        }
+        .paper-item{
+            height: fit-content;
+            border-radius: 5px;
+            background-color: #dddddd;
+            padding: 8px;
+        }
+        .paper-item li{
+            list-style: none;
+            text-align: left;
+            margin: 10px;
+        } 
+
+        .paper-heading span{
+            float: right;
+        }
+
+        .paper-heading span a{
+            border: 1px solid #333;
+            padding: 4px 20px;
+            text-decoration: none;
+            font-size: small;
+            border-radius: 5px;
+        }
+        /* form group */
+
+        /* Styles for the popup form */
+        
+
+        .container {
+        position: relative;
+        display: inline-block;
+        }
+
+        /* #action-button:hover{
+            border: none;
+            color: aliceblue;
+            background-color: black;
+        } */
+
+#popup {
+  display: none;
+  position: absolute;
+  top: calc(10% + 10px);
+  right: 0;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px;
+  margin: 5px;
+}
+
+#popup a {
+  display: block;
+  margin: 5px;
+  padding: 2px 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+    </style>
+</head>
+<body>
+    <div class="profile">
+        <div class="profile-pic">
+            <div class="left-part">
+                <img src="{% static 'user.png' %}" alt="Profile Picture">
+                <h2>Pintu</h2>
+                <p>As a software engineer, I believe in the power of technology to solve real-world problems and improve 
+                    people's lives. I strive to create efficient and innovative software solutions that meet the needs 
+                    of users and businesses.</p>
+            </div>
+            <div class="personal-info">
+                <h3>Personal Information</h3>
+                <!-- <p>As a software engineer, I believe in the power of technology to solve real-world problems and improve 
+                    people's lives. I strive to create efficient and innovative software solutions that meet the needs 
+                    of users and businesses.</p> -->
+                <p><strong>Username:</strong> Purushottam Patidar</p>
+                <p><strong>Email:</strong> user@example.com</p>
+                <p><strong>Mobile Number:</strong> 123-456-7890</p>
+                <p><strong>Address:</strong> 24/7 Bheru Nagar, Jaipur Rajasthan</p>
+                <p><strong>School Name:</strong> ABC School</p>
+                <p><strong>Remaining Paper Credit:</strong> 345</p>
+            </div>
+        </div>
+        <div class="profile-info">
+
+            <div class="paper-section">
+                <h3>Paper Section</h3>
+                <div class="paper-list">
+                    <div class="paper-item">
+                        <li class="paper-heading">Class 7 Social Science<span>
+                            <div class="container">
+                                <button id="action-button">action</button>
+                              
+                                <div id="popup">
+                                  <a href="#">View</a>
+                                  <a href="#">Edit</a>
+                                </div>
+                              </div>
+                        </span></li>
+                        <li class="paper-heading">Quarterly Exam  <span>Date:19/06/2023</span></li>
+                        <li class="paper-heading">Adarsh english High School Budha M.P. <span>Time:20:34</span></li>
+                    </div>
+                    <div class="paper-item">
+                        <li class="paper-heading">Class 7 Social Science <span>Date:19/06/2023</span></li>
+                        <li class="paper-heading">Quarterly Exam <span><a href="">View</a></span></li>
+                        <li class="paper-heading">Adarsh english High School Budha M.P. <span><a href="">Print</a></span></li>
+                    </div>
+                    <div class="paper-item">
+                        <li class="paper-heading">Class 7 Social Science<span>Date:19/06/2023</span></li>
+                        <li class="paper-heading">Quarterly Exam <span><a href="">View</a></span></li>
+                        <li class="paper-heading">Adarsh english High School Budha M.P. <span><a href="">Print</a></span></li>
+                    </div>
+                    <div class="paper-item">
+                        <li class="paper-heading">Class 7 Social Science<span>Date:19/06/2023</span></li>
+                        <li class="paper-heading">Quarterly Exam <span><a href="">View</a></span></li>
+                        <li class="paper-heading">Adarsh english High School Budha M.P. <span><a href="">Print</a></span></li>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+            document.getElementById("action-button").addEventListener("click", function() {
+            var popup = document.getElementById("popup");
+            if (popup.style.display === "none") {
+                popup.style.display = "block";
+            } else {
+                popup.style.display = "none";
+            }
+            });
+
+
+    </script>
+</body>
+</html>

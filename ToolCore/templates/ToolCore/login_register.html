@@ -1,0 +1,40 @@
+{%load static%}
+<link rel="stylesheet" href="{% static 'login_register.css' %}">
+{% block content %}
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+    <center>{{ message }}</center>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+{%if page == 'login'%}
+<div class="registerContainer">
+    <h1>Login</h1>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <input class="username" placeholder="username" type="text" name="username">
+        <input type="password" placeholder="password" name="password">
+
+        <input class="submitBtn" type="submit" value="Login">
+    </form>
+    <a href="{%url 'register' %}"><button class="submitBtn">Create new account</button></a>
+</div>
+{%else%}
+<div class="registerContainer">
+    <h1>Register</h1>
+    <form action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input class="username" name="username" type="text" placeholder="username" >
+        <input type="password" placeholder="Password" name="password1">
+        <input type="password" placeholder="Password" name="password2">
+        <a href=""><button type="submit" class="submitBtn">Register</button></a>
+      </form>
+      <span class="already">Already have an Account</span>
+      <a href="{%url 'login' %}">Login</a>
+</div>
+
+{%endif%}
+
+{% endblock content %}

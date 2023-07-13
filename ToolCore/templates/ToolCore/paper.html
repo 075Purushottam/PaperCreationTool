@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'paper.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.0.5/jspdf.plugin.autotable.js"></script>
+    <script>
+        function generatePDF() {
+            const element = document.getElementById('paper-section'); 
+            const options = {
+                margin:[10,0,0,0],
+                autoScale:true,
+                filename: 'output.pdf',
+                hyphenate: true,
+                html2canvas: { scale: 2, letterRendering: true,},
+                jsPDF: { unit: 'mm', format: 'letter', orientation: 'p' }
+            };
+            //options.jsPDF.format = [610, 397]; // [width, height] in millimeters
+            html2pdf().set(options).from(element).save();
+
+        }
+    </script>
+</head>
+
+<body>
+
+    <div class="paper-section" id="paper-section">
+        {{papersection|safe}}
+    </div>
+    
+    <div class="btn-section">
+    <button  class="action" >Print</button>
+    <button  onclick="generatePDF()" class="action" >Download Paper</button>
+    <button  class="action" ><a href="{% url 'paper-solution'%}">View Solution</a></button>
+    </div>
+
+
+    <!-- <div class="answersheet">
+        <h3>Answer Sheet</h3>
+    </div> -->
+
+    <script>
+        $('div.question').each(function() {
+        var questionDiv = $(this);
+        var pTag = questionDiv.find('p');
+        var ulTag = questionDiv.find('.optionHolder');
+        
+        // Move ulTag inside pTag
+        ulTag.appendTo(pTag);
+        
+        // Remove ulTag from previous place
+        ulTag.remove();
+        });
+
+
+    </script>
+</body>
+
+</html>
+

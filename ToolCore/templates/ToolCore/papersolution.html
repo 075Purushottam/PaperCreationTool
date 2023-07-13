@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="{% static 'solution.css' %}">
+    <title>Solution</title>
+</head>
+<body>
+    <h2 class="sol-heading">Paper Solution</h2>
+    <div class="paper-heading">
+        <div class="text-center">
+            <h3>{{form.school_name|upper}}</h3>
+        </div>
+        <h3>{{form.exam_name|upper}}</h3>
+        
+        
+        <div class="heading-top">
+            <div>
+                <p>Time: {{form.duration}}:00 Hour</p>
+                <p>Max Marks: {{form.marks}}</p>
+            </div>
+            <div>
+                <h3>{{form.class_name|upper}} {{form.subject_name|upper}}</h3>
+            </div>
+            <div>
+                <p>Date: {{form.date}}</p>
+                <p>Roll no:________</p>
+            </div>
+        </div>
+    </div>
+    <hr>
+    {% for item in allquestion%}
+    <div class="question">
+        <span class="serial-number">Question {{item.serialno}}</span>
+        <p id="{{item.id1}}">
+            {{item.question1}}
+        </p>
+        {% if item.question2 %}
+        <span class="or">OR</span>
+        <p id="{{item.id2}}">
+            {{item.question2}}
+        </p>
+        {% endif %}
+        <span class="marks">{{item.marks}}</span>
+    </div>
+    <div class="question answer">
+        <span class="serial-number">Answer</span>
+        <p>{{item.answer1}}</p>       
+        {% if item.answer2 %}
+        <span class="or">OR</span>
+        <p>{{item.answer2}} </p>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    <!-- {% for item in customquestions%}
+    <div class="question">
+        <span class="serial-number">Question {{item.serialno}}</span>
+        <p id="{{item.id}}">
+            {{item.question}}
+        </p>
+        <span class="marks">{{item.marks}}</span>
+    </div>
+    <div class="question answer">
+        <span class="serial-number">Answer</span>
+        <p>{{item.answer}}</p>
+    </div>
+    {% endfor %} -->
+</body>
+</html>

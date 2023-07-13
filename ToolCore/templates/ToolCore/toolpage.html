@@ -1,0 +1,810 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Website Filter</title>
+    <link rel="stylesheet" href="{% static 'toolstyle.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.0.5/jspdf.plugin.autotable.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <script>
+
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            const questionBox = document.getElementById('question-box');
+            const paperSection = document.getElementById('paper-section');
+
+            //Add event listeners for drag and drop
+            const draggableText = document.getElementById('draggable-text');
+            draggableText.addEventListener('dragstart', function (event) {
+                event.dataTransfer.setData('text/plain', draggableText.value.trim());
+            });
+
+            paperSection.addEventListener('dragover', function (event) {
+                event.preventDefault();
+            });
+
+            paperSection.addEventListener('drop', function (event) {
+                event.preventDefault();
+                const data = event.dataTransfer.getData('text/plain');
+                if (data !== '') {
+                    if (data !== 'draggable-text') {
+                        const question = document.getElementById(data);
+                        if (question) {
+
+                        } else {
+                            const heading = document.createElement('h4');
+                            heading.classList.add('deleteable');
+                            heading.style.cursor = 'pointer';
+                            // heading.classList.add('data-index', 0);
+                            heading.textContent = draggableText.value.trim();
+                            paperSection.appendChild(heading);
+                        }
+                    }
+                }
+            });
+
+           // Add event listener to clear the draggable text box value on dragend
+            draggableText.addEventListener('dragend', function () {
+                draggableText.value = '';
+            });
+
+
+
+            document.addEventListener('click', function (event) {
+                if (event.target.classList.contains('deleteable')) {
+                    event.target.remove();
+                }
+            });
+
+            var headingContainer = document.getElementById('paper-section');
+            // Add event listeners to dynamically generated headings
+            var dynamicHeadings = document.getElementsByClassName('deleteable');
+            for (var i = 0; i < dynamicHeadings.length; i++) {
+                dynamicHeadings[i].addEventListener('click', function (event) {
+                    // Remove the clicked heading from the container
+                    headingContainer.removeChild(event.target);
+                });
+            }
+
+            // Add event listeners for the questions in the question box
+            const questions = questionBox.getElementsByClassName('question');
+            Array.from(questions).forEach(function (question) {
+                question.addEventListener('dragstart', function (event) {
+                    event.dataTransfer.setData('text/plain', event.target.id);
+                });
+            });
+
+        });
+
+        var serial=0;
+        function addTextToPaper() {
+            // Get the input element
+            var input = document.getElementById('draggable-text');
+
+            // Get the entered text
+            var text = input.value;
+
+            // Create a new paragraph element
+            var heading = document.createElement('h4');
+            heading.classList.add('deleteable');
+            heading.textContent = text;
+
+            // Append the paragraph to the paper section
+            var paperSection = document.getElementById('paper-section');
+            paperSection.appendChild(heading);
+
+            // Clear the input field
+            input.value = '';
+            serial=0;
+        }
+
+
+        function addTextCenterToPaper(){
+            // Get the input element
+            var input = document.getElementById('draggable-text');
+
+            // Get the entered text
+            var text = input.value;
+
+            // Create a new paragraph element
+            var heading = document.createElement('h4');
+            heading.classList.add('deleteable');
+            heading.classList.add('headingCenter');
+            heading.textContent = text;
+
+            // Append the paragraph to the paper section
+            var paperSection = document.getElementById('paper-section');
+            paperSection.appendChild(heading);
+
+            // Clear the input field
+            input.value = '';
+            serial=0;
+        }
+
+
+        // populate data class/subjects/chapters
+
+        function fetchQuestions() {
+            // var classId = $('#class').val();
+            // var subjectId = $('#subject').val();
+
+            let type = {
+                a: "theory_questions",
+                b: "mcqs",
+                c: "fillups",
+                d: "true_falses"
+            };
+
+            var t = $('#question-type').val();
+            var chapterId = $('#chapter').val();
+            var length = $('#length').val();
+            var difficulty = $('#difficulty').val();
+            var query = $('#search').val();
+            $('#search').val('');
+            
+
+            //var questionsUrl = '/api/v1/chapters/'  + chapterId + '/' + type[t];
+            var questionsUrl = '/api/v1/chapterFilterQuestions/?chapter_id=' + chapterId +'&question_type='+ type[t] +'&length='+ length +'&difficulty=' + difficulty;
+            console.log(questionsUrl);
+
+            // if(length!=null && type[t]=="theory_questions"){
+            //     questionsUrl = '/api/v1/chapters/'+ chapterId + '/' +'theory_questions_length' + '/?length=' + length; 
+            // }
+
+            
+            // if(difficulty!=null && type[t]=="theory_questions"){
+            //     questionsUrl = '/api/v1/chapters/'+ chapterId + '/' +'theory_questions_difficulty' + '/?difficulty=' + difficulty; 
+            // }
+            
+            
+            if(query.length!=0){
+                questionsUrl = '/api/v1/search-questions/?q=' + query;
+                
+            }
+
+            function appendOption(questionContent,question) {
+                var listItems = [question.option_1,question.option_2,question.option_3,question.option_4];
+
+                var list = $('<ul></ul>');
+                list.addClass('optionHolder');
+                for (var i = 0; i < listItems.length; i++) {
+                var listItem = $('<li>' + '(' +  (i+1) + ') ' + listItems[i] + '</li>');
+                list.append(listItem);
+                }
+                
+                questionContent.append(list);
+             }
+
+            $.ajax({
+                url: questionsUrl,
+                type: 'GET',
+                success: function (data) {
+                    // Clear the existing questions in the question box
+                    $('#question-box').empty();
+                    var questionBoxHeading = $('<h3>').text('Question Section');
+                    $('#question-box').append(questionBoxHeading);
+                    var index = 0;
+                    // Iterate over the received data and add new questions to the question box
+                    data.forEach(function (question) {
+                        // Create a new question div element
+                        var newQuestion = $('<div>').addClass('question draggable').attr('draggable', 'true');
+                        newQuestion.attr('id',type[t] + '/'+question.id);
+                        newQuestion.attr('data-index',type[t] + '/' + question.id);
+
+
+                        // newQuestion.append(serialNumber);
+
+                        // Create and append the content to the new question div
+                        var questionContent = $('<p>');
+                            questionContent.attr('id',question.id);
+                        var serialNumber = $('<span>').addClass('serial-number').text(index + 1 + '.');
+                        index++;
+                        newQuestion.append(serialNumber);
+                        questionContent.append(question.question);
+                        if(type[t] == 'mcqs'){
+                            appendOption(questionContent,question);
+                        }
+                        newQuestion.append(questionContent);
+
+                        // Append the new question div to the question box
+                        $('#question-box').append(newQuestion);
+                    });
+
+                    // Attach event listeners for the newly added questions
+                    attachQuestionEventListeners();
+                },
+                error: function (error) {
+                    console.log('Error fetching questions:', error);
+                    var newQuestion = $('<div>').addClass('error');
+                        var questionContent = $('<p>').text('No Questions');
+                            newQuestion.append(questionContent);
+                        $('#question-box').append(newQuestion);
+                }
+            });
+        }
+
+
+
+
+        // Attach event listeners for drag and drop functionality
+        function attachQuestionEventListeners() {
+            const questions = document.querySelectorAll('.question');
+            questions.forEach((question) => {
+                question.addEventListener('dragstart', (event) => {
+                    event.dataTransfer.setData('text/plain', event.target.id);
+                });
+            });
+        }
+
+        var questionIds = [];
+        var questionList = [];
+        var Orquestions = [];
+        var marks = [];
+        $(document).ready(function () {
+            //Attach change event handlers to the select elements
+            $('#chapter').change(function() {
+                fetchQuestions();
+            });
+
+            fetchQuestions();
+            $('#question-type').change(function () {
+                fetchQuestions();
+            });
+
+            $('#length').change(function () {
+                fetchQuestions();
+            });
+
+            $('#difficulty').change(function () {
+                fetchQuestions();
+            });
+
+            $('#search-form').submit(function(event) {
+                event.preventDefault();
+                fetchQuestions();
+            });
+            
+
+            // Attach event listeners for drag and drop
+            const questionBox = document.getElementById('question-box');
+            const paperSection = document.getElementById('paper-section');
+
+            questionBox.addEventListener('dragover', function (event) {
+                event.preventDefault();
+            });
+
+            questionBox.addEventListener('drop', function (event) {
+                event.preventDefault();
+                const questionId = event.dataTransfer.getData('text/plain');
+                const question = document.getElementById(questionId);
+                const index = question.getAttribute('data-index');
+                const targetSection = questionBox;
+                const targetQuestions = targetSection.querySelectorAll('.question');
+                const insertBeforeIndex = targetQuestions.length > index ? index : -1;
+                const referenceQuestion = targetQuestions[insertBeforeIndex];
+                targetSection.insertBefore(question, referenceQuestion);
+                var ind = questionIds.indexOf(questionId);
+                if (ind !== -1) {
+                    questionIds.splice(ind, 1);
+                }
+                updateCount()
+                var spanElement = question.querySelector('span.marks');
+                question.removeChild(spanElement);
+                // Update the serial numbers
+                updateQuestionSerialNumbers(questionBox);
+                updateSerialNumbers(paperSection);
+            });
+
+            paperSection.addEventListener('dragover', function (event) {
+                event.preventDefault();
+            });
+
+            paperSection.addEventListener('drop', function (event) {
+                event.preventDefault();
+                const questionId = event.dataTransfer.getData('text/plain');
+                const question = document.getElementById(questionId);
+                const index = question.getAttribute('data-index');
+                const targetSection = paperSection;
+                const targetQuestions = targetSection.querySelectorAll('.question');
+                const insertBeforeIndex = targetQuestions.length > index ? index : -1;
+                const referenceQuestion = targetQuestions[insertBeforeIndex];
+                targetSection.insertBefore(question, referenceQuestion);
+                if(questionIds.includes(questionId)==false)
+                    questionIds.push(questionId);
+                
+                // console.log(questionIds);
+                // add marks at the end of line
+                    var noSpanTag= question.querySelector('.marks') === null;
+                    // var noSpanTag = paragraphElement.querySelector('span') === null;
+                    if(noSpanTag){
+                    var spanElement = document.createElement('span');
+                    spanElement.textContent = '[0]';
+                    spanElement.classList.add('marks');
+                    // spanElement.id = questionId;
+                   // paragraphElement.appendChild(spanElement);
+                    question.appendChild(spanElement);
+                    }
+
+                updateSerialNumbers(paperSection);
+                updateCount()
+                updateQuestionSerialNumbers(questionBox);
+            });
+
+        });        
+
+       
+        var questionsMarks = {};
+
+        document.addEventListener('click', function(event) {
+        var target = event.target;
+        
+        // Check if the clicked element is a <span> tag with the class "marks"
+        if (target.matches('span.marks')) {
+            makeEditable(target);
+        }
+
+        updateCount();
+
+        });
+
+
+        function makeEditable(element) {
+        element.contentEditable = 'true';
+        element.classList.add('editable');
+        element.focus();
+        }
+
+       
+      
+        function updateQuestionSerialNumbers(section) {
+            const questions = section.querySelectorAll('.question');
+            questions.forEach((question, index) => {
+                question.querySelector('.serial-number').textContent = `${index + 1}.`;
+            });
+        }
+
+        function updateSerialNumbers(section) {
+            const elements = section.querySelectorAll('.question,.deleteable');
+            serial=0;
+            elements.forEach((element, index) => {
+                if(element.classList[0] == 'deleteable') serial=0;
+                if(element.classList[0] == 'question') {
+                element.querySelector('.serial-number').textContent = `${serial + 1}.`; 
+                serial++;
+                }
+            });
+        }
+
+        
+
+        $(document).ready(function() {     
+            
+
+        $('#addCustomBtn').on('click', function() {
+            var customQuestion = $('#question').val();
+            var customAnswer = $('#answer').val();
+
+            if (customQuestion && customAnswer) {
+            questionList.push({ question: customQuestion, answer: customAnswer });
+            $('#customQuestion').val('');
+            $('#customAnswer').val('');
+            }
+            updateCount();
+        });
+
+        $('#save-btn').on('click', function() {
+
+            var papersection = $('#paper-section').html();
+            var marksdata = [];
+            var allquestion = [];
+            
+            $('#paper-section .question').each(function() {
+                const questionId = this.id;
+                const que = document.getElementById(questionId);
+
+                var serialno = que.querySelector("span.serial-number").textContent;
+                var marks = que.querySelector("span.marks").textContent;
+                var quesContent = que.querySelector("p").textContent;
+                var questions = quesContent.split("OR");
+                var question1 = questions[0];
+                var question2 = null;
+                if(questions.length==2) question2=questions[1];
+                var answer1="";
+                var answer2="";
+                for(var i = 0, size = questionList.length; i < size ; i++){
+                    var item = questionList[i];
+                    if(item['question']==question1){
+                        answer1=item['answer'];
+                    }
+
+                    if(item['question']==question2){
+                        answer2=item['answer'];
+                    }
+                }
+                var ids = questionId.split("|");
+                var id1 = ids[0];
+                var id2 = null;
+                if(ids.length==2) id2=ids[1]; 
+                allquestion.push({id1:id1,id2:id2,serialno:serialno,marks:marks,question1:question1,question2:question2,answer1:answer1,answer2:answer2});
+            });
+
+            // $('.marks').each(function() {
+            //     var questionId = this.id;
+            //     var marks = $(this).text();
+            //     const question = document.getElementById(questionId);
+            //     //console.log(question);
+            //     const serial = question.getElementsByClassName('serial-number')[0];
+            //     marksdata.push({ questionId: questionId, marks: marks,serialno:serial.textContent});
+            // });
+
+
+            var data = {
+            questionIds: questionIds,
+            'questionList': JSON.stringify(questionList),
+            // 'marks':JSON.stringify(marksdata),
+            'Orquestions':JSON.stringify(Orquestions),
+            'allquestion':JSON.stringify(allquestion),
+            papersection:JSON.stringify(papersection),
+            };
+
+            $.ajax({
+            url: 'view_pdf/',
+            type: 'POST',
+            headers: {
+                  'X-CSRFToken': '{{ csrf_token }}'
+            },
+            data: data,
+            success: function(response) {
+                window.location.href = '/paper/';
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+            }
+            });
+        });
+        });
+
+        function isNumber(char) {
+        if (typeof char !== 'string') {
+            return false;
+        }
+
+        if (char.trim() === '') {
+            return false;
+        }
+
+        return !isNaN(char);
+        }
+
+
+        function updateCount(){
+            var questionct = document.getElementById('questionCount');
+            var marksct = document.getElementById('marksCount');
+            var marks=0;
+            $('.marks').each(function() {
+                var questionId = this.id;
+                var str = $(this).text();
+                var number="";
+                for(var i=0;i<str.length;i++){
+                    if(isNumber(str[i])) number+=str[i]; 
+                }
+                
+                marks+=parseInt(number);
+            });
+
+            // console.log(questionIds)
+            // console.log(Orquestions)
+            // console.log(questionList)
+            questionct.textContent = questionIds.length + questionList.length ;
+            marksct.textContent =  marks;
+            
+        }
+
+
+
+    </script>
+</head>
+
+<body>
+
+    <div id="popupForm" class="form-popup">
+        <form class="form-container" method="get">
+            <h2>Add Question</h2>
+            <label for="question">Question:</label>
+            <!-- <input type="text" id="question" name="question" required> -->
+            <textarea id="question" name="question" rows="4" cols="50" required></textarea>
+            <label for="answer">Answer:</label>
+            <!-- <input type="text" id="answer" name="answer" required> -->
+            <textarea id="answer" name="answer" rows="4" cols="50" required></textarea>
+
+            <button type="submit" id="addCustomBtn" class="btn">Add</button>
+            <button type="button" class="btn cancel">Cancel</button>
+        </form>
+    </div>
+
+    <div class="navbar">
+        <div class="logo"><img src="{% static 'Padaku_small.png' %}" alt="" style="width: 180px;"></div>
+        <form id="search-form">
+            <input type="text" id="search" name="q" placeholder="Search your query here related to questions,chapters and subjects">
+            <input class="search-btn" type="submit" value="Search">
+        </form>
+        <div class="nav-links">
+            <a href="{% url 'profile' %}"><img class="profile" src="{% static 'user.png' %}" alt=""></a>
+        </div>
+    </div>
+    <div class="totalCountContainer">
+        <!-- <button class="action" id="addButton">Add Question</button> -->
+        <h4>Number Of Questions Added: <span id="questionCount"></span></h4>
+        <h4>Total Number Of Marks Added: <span id="marksCount"></span></h4>
+        <h4 id="info">i</h4>
+        <div id="infopopup">
+            <button id="close-btn">&times;</button>
+            <ul>
+              <li>Important point 1</li>
+              <li>Important point 2</li>
+              <li>Important point 3</li>
+              <li>Important point 4</li>
+            </ul>
+        </div>
+        
+    </div>
+
+    <div class="filter-section">
+
+        <label for="chapter">Chapter:</label>
+        <select id="chapter">
+            {% for chapter in chapters %}
+            <option value="{{chapter.id}}">{{chapter.chapter_name}}</option>
+            {% endfor %}
+        </select>
+
+        <label for="question-type">Question Type:</label>
+        <select id="question-type">
+
+            <option value="a">Theory Questions</option>
+            <option value="b">Multiple Choice Questions</option>
+            <option value="c">Fill in the blanks</option>
+            <option value="d">True or False</option>
+            <!-- <option value="e">Assertion ans Reason Type Questions</option> -->
+        </select>
+
+        <label for="length">Length:</label>
+        <select id="length">
+            <option value="one Word">One Word</option>
+            <option value="Very short">Very Short</option>
+            <option value="Short">Short</option>
+            <option value="Long">Long</option>
+            <option value="Very long">Very Long</option>
+        </select>
+
+        <label for="difficulty">Difficulty:</label>
+        <select id="difficulty">
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+            <!-- Add more difficulty options here -->
+        </select>
+
+
+        <!-- <label for="draggable-text">Draggable Text:</label> -->
+
+        <div class="action-btn">
+            <!-- <h3>Add Section Heading</h3> -->
+            <input type="text" id="draggable-text" class="text-box" draggable="true" placeholder="Type your heading">
+            <div class="heading-btn">
+            <a class="action" onclick="addTextToPaper()" class="action">Add to Left</a>
+            <a class="action" onclick="addTextCenterToPaper()" class="action">Add to center</a>
+            </div>
+            <button class="action" id="addButton">Add Question</button>
+            <button class="action" id="mergeInOr">Want to merge in or?</button>
+            <div class="save">
+                <button  id="save-btn" class="action" >Save Paper</button>
+            </div>
+            <!-- <h3>Add your Question</h3> -->
+            
+            <!-- <button  onclick="generatePDF()" class='action' >Generate PDF</button> -->
+            <!-- <a href="{% url 'view_pdf' %}" class="action">view_pdf</a> -->
+        </div>
+
+        
+
+        
+    </div>
+
+    <div class="question-box" id="question-box">
+        <h3>Question Section</h3> 
+    </div>
+
+
+
+<div id="main-content">
+    <div id="paper-section" class="paper-section">
+
+        <!-- <h3>Paper Section</h3> -->
+        <div class="paper-heading">
+            <div class="text-center">
+                <h3>{{form.school_name|upper}}</h3>
+            </div>
+            <h3>{{form.exam_name|upper}}</h3>
+            
+            
+            <div class="heading-top">
+                <div>
+                    <p>Time: {{form.duration}}:00 Hour</p>
+                    <p>Max Marks: {{form.marks}}</p>
+                </div>
+                <div>
+                    <h3>{{form.class_name|upper}} {{form.subject_name|upper}}</h3>
+                </div>
+                <div>
+                    <p>Date: {{form.date}}</p>
+                    <p>Roll no:________</p>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="instruction">
+            {% if form.rows %}
+            <h3>Exam instructions:</h3>
+            {% for row in form.rows %}
+            <li>{{ row }}</li>
+            {% endfor %}
+            {% endif %}
+        </div>
+        <hr>
+
+
+    </div>
+</div>
+   
+
+    <script>
+
+        document.getElementById("info").addEventListener("click", function() {
+        var popup = document.getElementById("infopopup");
+        if (popup.style.display === "none") {
+            popup.style.display = "block";
+        } else {
+            popup.style.display = "none";
+        }
+        });
+
+        document.getElementById("close-btn").addEventListener("click", function() {
+        var popup = document.getElementById("infopopup");
+        popup.style.display = "none";
+        });
+
+
+        // Open the popup form when the button is clicked
+        document.getElementById("addButton").addEventListener("click", function () {
+            document.getElementById("popupForm").style.display = "block";
+        });
+
+        // Close the popup form when the "Cancel" button is clicked
+        document.querySelector(".cancel").addEventListener("click", function () {
+            document.getElementById("popupForm").style.display = "none";
+        });
+
+        // Handle form submission
+        document.querySelector(".form-container").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            // Get the values from the input fields
+            var question = document.getElementById("question").value;
+            var answer = document.getElementById("answer").value;
+
+            var lastSerial=0;
+            var papersection = document.getElementById('paper-section');
+            lastSerialNumbers(papersection);
+            function lastSerialNumbers(section) {
+            const questions = section.querySelectorAll('.question');
+            questions.forEach((question, index) => {
+                //console.log(question.querySelector('.serial-number').textContent[0]);
+                lastSerial=question.querySelector('.serial-number').textContent[0];   
+            });
+        }
+        var nextSerial = parseInt(lastSerial) + 1;
+        if(serial == 0) nextSerial = 0;
+        nextSerial = serial + 1;
+        var newQuestion = $('<div>').addClass('question draggable').attr('draggable', 'true');
+                        newQuestion.attr('id', 'question-' + nextSerial);
+                        newQuestion.attr('data-index', nextSerial);
+                        var questionContent = $('<p>');
+                        var serialNumber = $('<span>').addClass('serial-number').text(nextSerial + '.');
+
+                        newQuestion.append(serialNumber);
+                        questionContent.append(question);
+                        newQuestion.append(questionContent);
+
+                        var spanElement = document.createElement('span');
+                        spanElement.textContent = '[0]';
+                        spanElement.classList.add('marks');
+                        spanElement.id='question-' + nextSerial;
+                        newQuestion.append(spanElement);
+
+                        $('#paper-section').append(newQuestion);
+                        const section = document.getElementById('paper-section'); 
+                        updateSerialNumbers(section);
+            // Do something with the question and answer, such as adding them to a list or performing an AJAX request
+
+            // Clear the input fields
+            document.getElementById("question").value = "";
+            document.getElementById("answer").value = "";
+
+            // Close the popup form
+            document.getElementById("popupForm").style.display = "none";
+        });
+
+        $(document).ready(function() {
+            const currentDate = new Date();
+            const currentDay = currentDate.getDate();
+            const currentMonth = currentDate.getMonth() + 1;
+            const currentYear = currentDate.getFullYear();    
+
+            var d = currentDay + '/' + currentMonth + '/' + currentYear;
+            $('#date').text(d);
+        });
+
+
+
+
+        const  mergeButton = document.getElementById("mergeInOr");
+        mergeButton.addEventListener("click", function() {
+            
+        function findSpanBySerialNumber(serialNumber) {
+            const paperSection = document.getElementById('paper-section'); 
+            const questiondivs = paperSection.getElementsByClassName("question");  
+
+        for (let i = 0; i < questiondivs.length; i++) {
+            const question = questiondivs[i];
+            const spanTag = question.getElementsByClassName("serial-number")[0];
+            
+            if (spanTag.textContent === serialNumber) {
+            return question;
+            }
+        }
+        
+        return null;
+        }
+
+        const targetSerialNumber = "1.";
+        const targetSerialNumber2 = "2.";
+        const ques1 = findSpanBySerialNumber(targetSerialNumber);
+        const ques2 = findSpanBySerialNumber(targetSerialNumber2);
+        if (ques1 && ques2) {
+            const id1 = ques1.id;
+            const id2 = ques2.id;
+            var ind = questionIds.indexOf(id1);
+                if (ind !== -1) {
+                    questionIds.splice(ind, 1);
+                }
+                ind = questionIds.indexOf(id2);
+                if (ind !== -1) {
+                    questionIds.splice(ind, 1);
+                }
+            const quesContent = ques2.querySelector("p");
+            var spanElement = document.createElement('span');
+                    spanElement.textContent = 'OR';
+                    spanElement.classList.add('or');
+                    ques1.querySelector("p").append(spanElement);
+            ques1.querySelector("p").append(quesContent.textContent);
+            ques1.id += "|" + ques2.id; 
+            ques2.remove();
+            Orquestions.push({ question1: id1, question2: id2 });
+            // questionIds.push(ques1);
+            updateCount();
+        } else {
+           alert("Both Serial number not found");
+        }
+        
+    });
+
+    </script>
+</body>
+
+</html>

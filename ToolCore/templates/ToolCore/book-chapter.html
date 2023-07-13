@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'book-chapter.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>Document</title>
+    <style>
+    </style>
+</head>
+<body>
+  <h1 class="main-heading">Select Chapter Corresponds to book</h1>
+    <div class="accordian">
+     <form method="POST">
+      {% csrf_token %}
+      {% for book_name,chapters in BookChapter.items %}
+        <li>
+          <input class="outer" name="accordian" type="checkbox" id="{{book_name}}">
+          <label class="outerlab" for="{{book_name}}">{{book_name}}</label>
+          <div class="content">
+            <ul id="{{book_name}}_main">  
+              <li><input class="inner select-all" type="checkbox" onclick="selectAllCheckboxes('{{book_name}}_main')" id="{{book_name}}_all"><label for="{{book_name}}_all" class="innerlab">Select All</label></li>
+              {% for chapter in chapters %}
+                <li><input class="inner checkbox" type="checkbox" name="selected_ids" onchange="checkboxChanged(this)" value="{{chapter.id}}" id="{{chapter.id}}"><label for="{{chapter.id}}" class="innerlab">{{chapter.chapter_name}}</label></li>
+              {% endfor %}
+            </ul>                  
+          </div>
+        </li>
+      {% endfor %}
+      <input type="submit" value="Submit" class="action">
+     </form>
+      </div>
+
+      <script>
+            function selectAllCheckboxes(id) {
+              var selectAllCheckbox = document.getElementById(id);
+                var checkboxes = selectAllCheckbox.querySelectorAll("li input[type='checkbox'].checkbox");
+                var selectall = selectAllCheckbox.getElementsByClassName("select-all")[0];
+            
+              for (var i = 0; i < checkboxes.length; i++) {
+                checkboxes[i].checked = selectall.checked;
+                checkboxChanged(checkboxes[i]); // Trigger onchange event to update checkbox style
+              }
+            }
+
+            function checkboxChanged(checkbox) {
+              // Update checkbox style
+              var label = checkbox.nextElementSibling;
+              if (checkbox.checked) {
+                label.classList.add("checked");
+              } else {
+                label.classList.remove("checked");
+              }
+            }
+
+
+      </script>
+  
+</body>
+</html>

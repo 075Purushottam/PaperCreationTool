@@ -1,0 +1,107 @@
+body{
+    background-color: #f2f2f2;
+}
+.main-heading{
+    text-align: center;
+}
+li{
+    list-style: none;
+}
+.accordian{
+    width: 600px;
+    height: fit-content;
+    padding: 7px 10px;
+    margin: auto auto;
+    border-radius: 2px;
+    color: antiquewhite;
+}
+.accordian li .outerlab{
+    font-weight:700;
+    font-size: 28px;
+}
+/* input[type="radio"]{
+    display: none;
+} */
+.accordian .outer{
+    display: none;
+}
+
+.accordian .outerlab::after{
+    content: "+";
+    float: right;
+    /* margin-right:10px; */
+    font-size: 24px;
+    font-weight: 700;
+}
+.accordian li .content select{
+    color: rgb(255, 240, 221);
+}
+
+.accordian .content{
+    max-height: 0;
+    padding: 0 10px;
+    overflow: hidden;
+    line-height: 26px;
+    transition: max-height 0.5s, padding 0.5s;
+}
+
+
+.accordian li .outer:checked + .outerlab + .content{
+    max-height: fit-content;
+    padding: 15px 15px 15px 15px;
+}
+.accordian li{
+    background-color: rgb(131, 127, 127);
+    box-shadow:2px 2px 5px#888888;
+    border:1px solid black;
+    border-radius: 2px;
+    margin:5px;
+    padding:24px;
+}
+
+.accordian .outer:checked + .outerlab::after{
+    content: "–";
+}
+
+.accordian input::-webkit-outer-spin-button,
+.accordian input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.content ul li{
+    background-color: aliceblue;
+    color: black;
+}
+
+.inner{
+cursor: pointer;
+width: 20px;
+height: 20px;
+margin-right: 15px;
+}
+
+.innerlab{
+    font-size: 24px;
+}
+
+
+.action {
+    text-decoration: none;
+    color: #333;
+    padding: 8px 16px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    margin: 15px auto;
+    min-width: 220px;
+    text-align: center;
+    font-weight: 400;
+    font-size: larger;
+    display: flex;
+    justify-content: center;
+}
+
+  .action:hover{
+    background-color: #333;
+    color: #fff;
+  }

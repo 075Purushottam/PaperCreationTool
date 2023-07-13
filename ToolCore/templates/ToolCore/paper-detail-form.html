@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            background-color: rgb(192, 192, 192);
+            display: flex;
+            justify-content: center;
+            background-blend-mode: screen;
+        }
+
+        .box {
+            content: "";
+            background-color:#0E2954;
+            margin-top: 20px;
+            border-radius: 5px;
+            padding: 20px;
+            width: 90%;
+            max-width: 600px;
+            margin-bottom: 10px;
+        }
+
+        form {
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        label {
+            margin: 10px;
+            display: block;
+            font-size: 13px;
+            color: white;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        textarea,input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            outline: none;
+            border: none;
+            box-sizing: border-box;
+            margin: 10px 0px;
+            /* margin: 10px; */
+            background-color: aliceblue;
+            border-radius: 5px;
+            opacity: 1;
+        }
+
+
+        select{
+            width: 100%;
+            padding: 15px;
+            /* border: none; */
+            box-sizing: border-box;
+            margin: 10px 0px;
+            background-color: aliceblue;
+            border-radius: 5px;
+            opacity: 1;
+        }
+  
+
+
+        input:focus,select:focus,textarea:focus {
+            outline: 2px solid #ff9242;
+            opacity: 1;
+            /* border: 1px solid #ff9242; */
+        }
+       
+
+
+        #submitbtn {
+            margin : 10px auto;
+            font-size: 20px;
+            /* font-weight: bold; */
+            color:#0f0f0f;
+            border: none;
+            background-color:#ff9242;
+            /* background: none; */
+            border-radius: 5px;
+            width: 100%;
+            height: 40px;
+        }
+
+        #submitbtn:hover {
+            cursor: pointer;
+            background-color:#f18f4a;
+            
+        }
+
+       
+        /* Responsive adjustments */
+        @media only screen and (max-width: 600px) {
+            .box {
+                width: 90%;
+                padding: 10px;
+            }
+
+            input[type="text"],
+            input[type="email"],
+            textarea {
+                margin : 5px 0px;
+                /* margin: 5px; */
+            }
+
+            .name-fields input {
+                width: 100%;
+            }
+
+        }
+
+        h1 {
+            text-align: center;
+        }
+    </style>
+
+<script>
+
+// window.addEventListener('popstate', function(event) {
+//     alert('Please Select Class again otherwise form is not submitted');
+// });
+    // Function to fetch subjects based on the selected class
+    function fetchSubjects() {
+        var classId = $('#id_class_name').val();
+        var subjectsUrl = '/api/v1/classes/' + classId + '/subjects/';
+
+        $.ajax({
+            url: subjectsUrl,
+            type: 'GET',
+            success: function(data) {
+            // Clear the existing options in the subjectSelect dropdown
+            $('#id_subject_name').empty();
+
+            // Iterate over the received data and add new options to the subjectSelect dropdown
+            var option = $('<option>').val(0).text('---------');
+            $('#id_subject_name').append(option);
+            data.forEach(function(subject) {
+            var option = $('<option>').val(subject.id).text(subject.subject_name);
+            $('#id_subject_name').append(option);
+            });
+            },
+            error: function(xhr, status, error) {
+                // Handle the error scenario
+                console.error(error);
+            }
+        });
+    }
+    
+   
+   
+    // Attach change event handlers to the select elements
+    $(document).ready(function() {
+        if($('#id_class_name').val()!='0')
+            fetchSubjects();
+        $('#id_class_name').change(function() {
+            fetchSubjects();
+        });
+    });
+
+
+</script>
+
+</head>
+
+<body>
+    <div class="container">
+            
+        <div class="box">
+            <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" id="submitbtn">Submit</button>
+            </form>
+        </div> 
+    </div>
+
+   
+   
+</body>
+
+</html>
