@@ -61,8 +61,7 @@ def logoutUser(request):
 
 
 def toolPage(request):
-    # chapter_response = requests.get('http://127.0.0.1:8000/api/v1/classes/8/subjects/9/chapters/')
-    class_response = requests.get('http://127.0.0.1:8000/api/v1/classes/')
+    class_response = requests.get('http://54.252.241.208/api/v1/classes/')
     # chapters = chapter_response.json()
     classes = class_response.json()
     
@@ -75,8 +74,8 @@ def toolPage(request):
         
         class_id = request.POST.get('class_name')
         subject_id = request.POST.get('subject_name')
-        class_response = requests.get('http://127.0.0.1:8000/api/v1/classes/' + class_id + '/')
-        subject_response = requests.get('http://127.0.0.1:8000/api/v1/subjects/' + subject_id + '/')
+        class_response = requests.get('http://54.252.241.208/api/v1/classes/' + class_id + '/')
+        subject_response = requests.get('http://54.252.241.208/api/v1/subjects/' + subject_id + '/')
         class_name = class_response.json()['class_name']
         subject_name = subject_response.json()['subject_name']
         # context = {'class_name':class_name,'subject_name':subject_name,'form':form,'rows':rows,'chapters':chapters}
@@ -103,7 +102,7 @@ def toolPage(request):
 
 def bookChapter(request):
     subject_id = request.session.get('subject_id')
-    book_response = requests.get('http://127.0.0.1:8000/api/v1/subjects/' + str(subject_id) + '/books/')
+    book_response = requests.get('http://54.252.241.208/api/v1/subjects/' + str(subject_id) + '/books/')
     books = book_response.json()
     form = {
         'school_name':request.session.get('school_name'),
@@ -120,7 +119,7 @@ def bookChapter(request):
 
     BookChapter = {}
     for book in books:
-        chapter_response = requests.get('http://127.0.0.1:8000/api/v1/books/' + str(book['id']) + '/chapters/')
+        chapter_response = requests.get('http://54.252.241.208/api/v1/books/' + str(book['id']) + '/chapters/')
         chapters = chapter_response.json()
         BookChapter[book['book_name']]=chapters
     
@@ -128,7 +127,7 @@ def bookChapter(request):
         selected_ids = request.POST.getlist('selected_ids')
         selected_chapters = []
         for id in selected_ids:
-            chapter_detial = requests.get('http://127.0.0.1:8000/api/v1/chapters/' + str(id) + '/')
+            chapter_detial = requests.get('http://54.252.241.208/api/v1/chapters/' + str(id) + '/')
             chapterDetail = chapter_detial.json()
             selected_chapters.append(chapterDetail)
         
@@ -161,7 +160,7 @@ def viewPDF(request):
         for item in allquestion:
             
             if item['id1'][0]!='q':
-                question_response = requests.get('http://127.0.0.1:8000/api/v1/' + item['id1'] + '/')
+                question_response = requests.get('http://54.252.241.208/api/v1/' + item['id1'] + '/')
                 question = question_response.json()
                 if item['id1'][0]=='m':
                     item['answer1']=question['correct_option']
@@ -169,7 +168,7 @@ def viewPDF(request):
                     item['answer1']=question['answer']
             
             if item['id2']!=None and item['id2'][0]!='q':
-                question_response = requests.get('http://127.0.0.1:8000/api/v1/' + item['id2'] + '/')
+                question_response = requests.get('http://54.252.241.208/api/v1/' + item['id2'] + '/')
                 question = question_response.json()
                 if item['id2'][0]=='m':
                     item['answer2']=question['correct_option']

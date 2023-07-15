@@ -1,0 +1,58 @@
+
+.sol-heading{
+    text-align: center;
+    margin: 0;
+}
+.question{
+    display: flex;
+    flex-wrap: nowrap; 
+    align-items: baseline;
+}
+.serial-number{
+    margin-left: 23px;
+}
+
+.question p{
+    margin: 0 10px;
+    display: flex;
+    flex-direction: column;
+    font-size: 16px;
+}
+
+.question p ul {
+    display: flex;
+    flex-wrap: wrap;
+    list-style-type: none;
+    padding: 0;
+  }
+
+.question p ul li {
+flex: 0 0 50%; 
+box-sizing: border-box;
+word-break: break-word; 
+}
+
+.answer p{
+    margin-left: 35px;
+}
+.marks{
+    margin-left:auto;
+    margin-right:16px;
+}
+
+.paper-heading {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    line-height: 0;
+    margin: 0 15px;
+}
+
+.heading-top {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.heading-top div{
+    text-align: left;
+}

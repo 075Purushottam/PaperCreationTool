@@ -1,0 +1,134 @@
+li{
+    list-style: none;
+}
+.paper-section{
+    /* border: 1px solid #333; */
+    padding: 15px;
+}
+@page {
+    margin-bottom: 20px;
+  }
+hr{
+    margin: 10px 15px;
+}
+.paper-section {
+    padding: 0 20px;
+    /* page-break-inside:avoid; */
+}
+
+.paper-heading {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    line-height: 0;
+    margin: 0 15px;
+}
+
+.heading-top {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.heading-top div{
+    text-align: left;
+}
+.deleteable{
+    margin-left: 18px;
+    font-size: 18px;
+}
+
+.paper-section h3 {
+    margin-bottom: 10px;
+}
+
+.instruction {
+    text-align: left;
+    font-size: 18px;
+    margin: 0 15px;
+}
+.instruction h3{
+    margin: 0;
+}
+.instruction li {
+    word-spacing: 2px;
+    margin:0px 10px;
+    font-size: 16px;
+}
+
+.question{
+    display: flex;
+    flex-wrap: nowrap; 
+    align-items: baseline;
+}
+.question .serial-number{
+    margin-left: 23px;
+}
+
+.question p{
+    margin: 0 10px;
+    display: flex;
+    flex-direction: column;
+    /* line-height: 1.2; */
+    font-size: 16px;
+}
+.question p ul {
+    display: flex;
+    flex-wrap: wrap;
+    list-style-type: none;
+    padding: 0;
+  }
+
+  .question p ul li {
+    flex: 0 0 50%; 
+    box-sizing: border-box;
+    word-break: break-word; 
+  }
+  .question p span.or{
+    text-align: center;
+}
+
+.action{
+    text-decoration: none;
+    color: #333;
+    padding: 8px 16px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    margin: 5px auto;
+    min-width: 220px;
+    text-align: center;
+    font-weight: 400;
+  }
+
+  .action:hover{
+    background-color: #333;
+    color: #fff;
+  }
+
+  .btn-section{
+    display: flex;
+    /* flex-direction: row; */
+    justify-content:center;
+  }
+
+  .btn-section button{
+    margin:50px 5px;
+  }
+  /* .avoid-page-break {
+    page-break-inside: avoid;
+} */
+
+.marks{
+    margin-left:auto;
+    margin-right: 16px;
+}
+
+.btn-section button a{
+    color:black;
+}
+.btn-section button a:hover{
+    color:white;
+}
+
+.question p span.or{
+    text-align: center;
+}

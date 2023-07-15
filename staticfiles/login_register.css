@@ -1,0 +1,64 @@
+ /* Login Register Page */
+ *{
+    margin: 0;
+    padding: 0;
+ }
+ #navbar{
+    position: relative;
+ }
+ .registerContainer{
+    margin-left: auto;
+    margin-right:auto;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    border: 1px solid #3fdbed;
+    border-radius:7px;
+    width: 350px;
+    height: 400px;
+    text-align: center;
+    padding: 15px;
+  }
+  .registerContainer form input{
+    margin:10px 12px;
+  } 
+  .registerContainer h1{
+    font-size: 30px;
+    font-weight: 350;
+    margin-bottom: 60px;
+    color: #888888;
+    letter-spacing: 2px;
+  }
+  .username:focus{
+    outline: none;
+  }
+  
+  input{
+    margin: 50px;
+    border:0px;
+    outline: none;
+    border-bottom:1px solid #888888;
+    width: 80%;
+    padding:5px 0;
+    border-bottom:1px solid #3fdbed;
+  }
+  
+  input:focus{
+    border-bottom:2px solid #3fdbed;
+  }
+  .submitBtn{
+    margin-top: 25px;
+    margin-bottom: 25px;
+    border:1px solid#3fdbed;
+    border-radius: 4px;
+    padding: 5px 10px;
+    color: #888888;
+    background: transparent;
+  }
+  .submitBtn:hover{
+    color: #ffffff;
+    background: #3fdbed;
+  }
+  ::placeholder{
+    color:#888888; 
+  }
+  /* Login Register Page */
