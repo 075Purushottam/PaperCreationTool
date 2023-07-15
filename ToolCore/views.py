@@ -9,12 +9,8 @@ from django.http import JsonResponse,HttpResponse
 from .forms import PaperDetailForm
 from django.http import HttpResponse,HttpResponseRedirect
 from django.template.loader import render_to_string
-from xhtml2pdf import pisa
 from django.template.loader import get_template
 from django.template import RequestContext
-from reportlab.pdfgen import canvas
-from django.utils.safestring import mark_safe
-from io import BytesIO
 from django.views import View
 import json
 
