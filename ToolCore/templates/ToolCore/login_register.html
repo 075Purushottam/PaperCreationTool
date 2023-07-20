@@ -12,29 +12,36 @@
 {%if page == 'login'%}
 <div class="registerContainer">
     <h1>Login</h1>
-    <form action="" method="POST">
-        {% csrf_token %}
-        <input class="username" placeholder="username" type="text" name="username">
-        <input type="password" placeholder="password" name="password">
+    <form method="POST">
+      {% csrf_token %}
+      <input class="username" placeholder="email" type="email" name="email">
+      <input type="password" placeholder="password" name="password">
 
-        <input class="submitBtn" type="submit" value="Login">
+      <input class="submitBtn" type="submit" value="Login">
     </form>
     <a href="{%url 'register' %}"><button class="submitBtn">Create new account</button></a>
 </div>
 {%else%}
 <div class="registerContainer">
     <h1>Register</h1>
-    <form action="" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input class="username" name="username" type="text" placeholder="username" >
-        <input type="password" placeholder="Password" name="password1">
-        <input type="password" placeholder="Password" name="password2">
-        <a href=""><button type="submit" class="submitBtn">Register</button></a>
-      </form>
+    <form method="POST">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="form-group">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+          <div class="error">{{ field.errors }}</div>
+        {% endif %}
+      </div>    
+      {% endfor %}
+      <input class="submitBtn" type="submit" value="Login">
+  </form>
       <span class="already">Already have an Account</span>
       <a href="{%url 'login' %}">Login</a>
 </div>
 
 {%endif%}
+
 
 {% endblock content %}

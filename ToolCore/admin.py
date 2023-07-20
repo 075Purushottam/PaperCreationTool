@@ -1,3 +1,5 @@
 from django.contrib import admin
-
-# Register your models here.
+from .models import UserLogin, ToolLogin, Paper
+admin.site.register(UserLogin)
+admin.site.register(ToolLogin)
+admin.site.register(Paper)

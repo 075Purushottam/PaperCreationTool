@@ -150,26 +150,7 @@
             background-color: black;
         } */
 
-#popup {
-  display: none;
-  position: absolute;
-  top: calc(10% + 10px);
-  right: 0;
-  background-color: #f9f9f9;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 5px;
-  margin: 5px;
-}
 
-#popup a {
-  display: block;
-  margin: 5px;
-  padding: 2px 20px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  text-decoration: none;
-}
 
     </style>
 </head>
@@ -178,7 +159,7 @@
         <div class="profile-pic">
             <div class="left-part">
                 <img src="{% static 'user.png' %}" alt="Profile Picture">
-                <h2>Pintu</h2>
+                <h2>tooluser_{{user.tool_id}}</h2>
                 <p>As a software engineer, I believe in the power of technology to solve real-world problems and improve 
                     people's lives. I strive to create efficient and innovative software solutions that meet the needs 
                     of users and businesses.</p>
@@ -188,12 +169,12 @@
                 <!-- <p>As a software engineer, I believe in the power of technology to solve real-world problems and improve 
                     people's lives. I strive to create efficient and innovative software solutions that meet the needs 
                     of users and businesses.</p> -->
-                <p><strong>Username:</strong> Purushottam Patidar</p>
-                <p><strong>Email:</strong> user@example.com</p>
-                <p><strong>Mobile Number:</strong> 123-456-7890</p>
-                <p><strong>Address:</strong> 24/7 Bheru Nagar, Jaipur Rajasthan</p>
-                <p><strong>School Name:</strong> ABC School</p>
-                <p><strong>Remaining Paper Credit:</strong> 345</p>
+                <p><strong>Username:</strong> {{user.name}}</p>
+                <p><strong>Email:</strong> {{user.email}}</p>
+                <p><strong>Mobile Number:</strong> {{user.user.mobile}}</p>
+                <p><strong>Address:</strong> {{user.user.address}}</p>
+                <p><strong>Total Paper Generate:</strong>{{ papers|length }}</p>
+                <p><strong>Remaining Paper Credit:</strong>{{user.paper_credential}}</p>
             </div>
         </div>
         <div class="profile-info">
@@ -201,51 +182,19 @@
             <div class="paper-section">
                 <h3>Paper Section</h3>
                 <div class="paper-list">
+                    {% for paper in papers %}
                     <div class="paper-item">
-                        <li class="paper-heading">Class 7 Social Science<span>
-                            <div class="container">
-                                <button id="action-button">action</button>
-                              
-                                <div id="popup">
-                                  <a href="#">View</a>
-                                  <a href="#">Edit</a>
-                                </div>
-                              </div>
+                        <li class="paper-heading">{{paper.class_name}} {{paper.subject_name}}<span>
+                            <a href="#">View</a>
+                            <a href="#">Edit</a>
                         </span></li>
-                        <li class="paper-heading">Quarterly Exam  <span>Date:19/06/2023</span></li>
-                        <li class="paper-heading">Adarsh english High School Budha M.P. <span>Time:20:34</span></li>
+                        <li class="paper-heading">{{paper.exam_name}} <span>Date: {{ paper.created_date|date:"Y-m-d" }}</span></li>
+                        <li class="paper-heading">{{paper.school_name}}<span>Time: {{ paper.created_date|time:"H:i:s" }}</span></li>
                     </div>
-                    <div class="paper-item">
-                        <li class="paper-heading">Class 7 Social Science <span>Date:19/06/2023</span></li>
-                        <li class="paper-heading">Quarterly Exam <span><a href="">View</a></span></li>
-                        <li class="paper-heading">Adarsh english High School Budha M.P. <span><a href="">Print</a></span></li>
-                    </div>
-                    <div class="paper-item">
-                        <li class="paper-heading">Class 7 Social Science<span>Date:19/06/2023</span></li>
-                        <li class="paper-heading">Quarterly Exam <span><a href="">View</a></span></li>
-                        <li class="paper-heading">Adarsh english High School Budha M.P. <span><a href="">Print</a></span></li>
-                    </div>
-                    <div class="paper-item">
-                        <li class="paper-heading">Class 7 Social Science<span>Date:19/06/2023</span></li>
-                        <li class="paper-heading">Quarterly Exam <span><a href="">View</a></span></li>
-                        <li class="paper-heading">Adarsh english High School Budha M.P. <span><a href="">Print</a></span></li>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
     </div>
-
-    <script>
-            document.getElementById("action-button").addEventListener("click", function() {
-            var popup = document.getElementById("popup");
-            if (popup.style.display === "none") {
-                popup.style.display = "block";
-            } else {
-                popup.style.display = "none";
-            }
-            });
-
-
-    </script>
 </body>
 </html>

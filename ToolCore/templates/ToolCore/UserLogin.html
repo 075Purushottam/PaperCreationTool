@@ -1,0 +1,96 @@
+{%load static%}
+
+<style>
+    .registerContainer{
+    margin-left: auto;
+    margin-right:auto;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    border: 1px solid #3fdbed;
+    border-radius:7px;
+    width: 350px;
+    /* height: 400px; */
+    text-align: center;
+    padding: 15px;
+  }
+  .registerContainer form input{
+    margin:10px 12px;
+  } 
+  .registerContainer h1{
+    font-size: 30px;
+    font-weight: 350;
+    margin-bottom: 60px;
+    color: #888888;
+    letter-spacing: 2px;
+  }
+  .username:focus{
+    outline: none;
+  }
+  
+  input{
+    margin: 50px;
+    border:0px;
+    outline: none;
+    border-bottom:1px solid #888888;
+    width: 80%;
+    padding:5px 0;
+    border-bottom:1px solid #3fdbed;
+  }
+  
+  input:focus{
+    border-bottom:2px solid #3fdbed;
+  }
+  .submitBtn{
+    margin-top: 25px;
+    margin-bottom: 25px;
+    border:1px solid#3fdbed;
+    border-radius: 4px;
+    padding: 5px 10px;
+    color: #888888;
+    background: transparent;
+  }
+  .submitBtn:hover{
+    color: #ffffff;
+    background: #3fdbed;
+  }
+  ::placeholder{
+    color:#888888; 
+  }
+</style>
+{% block content %}
+
+{% if form.errors %}
+  <p class="error">Invalid email or password</p>
+{% endif %}
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+    <center>{{ message }}</center>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+{% if flag != 'register' %}
+
+<div class="registerContainer">
+<form method="POST">
+  <h1>Login</h1>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input class="submitBtn" type="submit" value="Login">
+  </form>
+  <a href="{%url 'user-register' %}"><button class="submitBtn">Create new account</button></a>
+</div>
+{%else%}
+<div class="registerContainer">
+  <form method="POST">
+    <h1>Register</h1>
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input class="submitBtn" type="submit" value="Register">
+  </form>
+  <span class="already">Already have an Account</span>
+  <a href="{%url 'user-login' %}">Login</a>
+</div>
+{%endif%}
+{% endblock %}

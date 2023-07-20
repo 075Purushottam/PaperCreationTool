@@ -534,21 +534,23 @@
             <input class="search-btn" type="submit" value="Search">
         </form>
         <div class="nav-links">
+            <p><strong>{{user.name}}</strong></p>
             <a href="{% url 'profile' %}"><img class="profile" src="{% static 'user.png' %}" alt=""></a>
         </div>
     </div>
     <div class="totalCountContainer">
         <!-- <button class="action" id="addButton">Add Question</button> -->
+        <h4>Remaining Credential: <span id="RempaperCount">{{user.paper_credential}}</span></h4>
         <h4>Number Of Questions Added: <span id="questionCount"></span></h4>
         <h4>Total Number Of Marks Added: <span id="marksCount"></span></h4>
         <h4 id="info">i</h4>
         <div id="infopopup">
             <button id="close-btn">&times;</button>
             <ul>
-              <li>Important point 1</li>
-              <li>Important point 2</li>
-              <li>Important point 3</li>
-              <li>Important point 4</li>
+              <li><strong>Don't Refresh the Page other wise all added question will gone.</strong></li>
+              <li><strong>Make sure paper added marks match with paper maxmarks.</strong></li>
+              <li><strong>If you added some questions then you doesn't rearrange them.</strong></li>
+              <li><strong>If you want rearrangemet then drop all subsequent questions into questionbox.</strong></li>
             </ul>
         </div>
         
@@ -803,6 +805,7 @@
         }
         
     });
+
 
     </script>
 </body>

@@ -18,7 +18,9 @@
         body {
             font-family: Arial, sans-serif;
         }
-
+        .tooluser_heading{
+            color: #f18f4a;
+        }
         .container {
             background-color: rgb(192, 192, 192);
             display: flex;
@@ -110,14 +112,13 @@
         @media only screen and (max-width: 600px) {
             .box {
                 width: 90%;
-                padding: 10px;
+                padding: 20px;
             }
 
             input[type="text"],
             input[type="email"],
             textarea {
                 margin : 5px 0px;
-                /* margin: 5px; */
             }
 
             .name-fields input {
@@ -180,18 +181,24 @@
 </head>
 
 <body>
+
     <div class="container">
-            
+ 
         <div class="box">
+            {% if user_id %}
+            <h2 class="tooluser_heading">Welcome, tooluser_{{ user_id }}</h2>
+        {% endif %}
             <form method="POST">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit" id="submitbtn">Submit</button>
             </form>
+
+            
         </div> 
     </div>
-
    
+        
    
 </body>
 

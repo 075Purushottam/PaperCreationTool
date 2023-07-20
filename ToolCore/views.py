@@ -3,6 +3,7 @@ import requests
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from .forms import CustomUserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.http import JsonResponse,HttpResponse
@@ -12,23 +13,23 @@ from django.template.loader import render_to_string
 from django.template.loader import get_template
 from django.template import RequestContext
 from django.views import View
+from django.core.mail import send_mail
 import json
 
-def home(request):
-    return render(request,'ToolCore/homepage.html')
+from .forms import UserLoginCreateForm,LoginForm
+from .models import ToolLogin,UserLogin,Paper
 
 def loginPage(request):
     page='login'
     if request.method == "POST":
-        username = request.POST.get('username')
+        email = request.POST.get('email')
         password = request.POST.get('password')
-
         try:
-            user = User.objects.get(username=username)
+            user = User.objects.get(email=email)
         except:
             messages.error(request, 'User does not Exist')
-
-        user = authenticate(request,username=username,password=password)
+        
+        user = authenticate(request,email=email,password=password)
 
         if user is not None:
             login(request,user)
@@ -39,10 +40,10 @@ def loginPage(request):
     return render(request,'ToolCore/login_register.html',context)
 
 def registerPage(request):
-    form = UserCreationForm()
+    form = CustomUserCreationForm()
 
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
             user.username = user.username.lower()
@@ -52,15 +53,15 @@ def registerPage(request):
         else:
             messages.error(request,'Error occured during registration')
 
-    return render(request,'ToolCore/login_register.html')
+    return render(request,'ToolCore/login_register.html',{'form':form})
 
 def logoutUser(request):
-    logout(request)
     return redirect('home')
 
 
 
 def toolPage(request):
+    # chapter_response = requests.get('http://127.0.0.1:8000/api/v1/classes/8/subjects/9/chapters/')
     class_response = requests.get('http://54.252.241.208/api/v1/classes/')
     # chapters = chapter_response.json()
     classes = class_response.json()
@@ -96,8 +97,9 @@ def toolPage(request):
     classes = data + classes
     choices = [(option['id'], option['class_name']) for option in classes]
     form = PaperDetailForm(choices=choices)
-    
-    context = {'form':form}
+    tool_user_id = request.session.get('tool_user_id')
+    user = ToolLogin.objects.filter(tool_id=tool_user_id)
+    context = {'form':form,'user_id':tool_user_id}
     return render(request,'ToolCore/paper-detail-form.html',context)
 
 def bookChapter(request):
@@ -115,6 +117,8 @@ def bookChapter(request):
         'rows':request.session.get('rows'),
     }
 
+    tool_user_id = request.session.get('tool_user_id')
+    user = ToolLogin.objects.get(tool_id=tool_user_id)
 
 
     BookChapter = {}
@@ -130,12 +134,12 @@ def bookChapter(request):
             chapter_detial = requests.get('http://54.252.241.208/api/v1/chapters/' + str(id) + '/')
             chapterDetail = chapter_detial.json()
             selected_chapters.append(chapterDetail)
-        
-        context = {'form':form,'BookChapter':BookChapter,'chapters':selected_chapters}
+           
+        context = {'form':form,'BookChapter':BookChapter,'chapters':selected_chapters,'user':user}
 
         return render(request,'ToolCore/toolpage.html',context)
     
-    context = {'form':form,'BookChapter':BookChapter}
+    context = {'form':form,'BookChapter':BookChapter,'user':user}
     return render(request,'ToolCore/book-chapter.html',context)
 
 
@@ -174,7 +178,7 @@ def viewPDF(request):
                     item['answer2']=question['correct_option']
                 else:
                     item['answer2']=question['answer']
-        print(allquestion)
+        # print(allquestion)
 
         request.session['questions'] = questions
         request.session['customquestions'] = question_list
@@ -185,19 +189,50 @@ def viewPDF(request):
 
         return JsonResponse({'message': 'Data received and processed successfully'})
 
-    # Return an error response if the request method is not POST or it's not an AJAX request
     return JsonResponse({'error': 'Invalid request'})
 
 
 def paper(request):
     papersection = request.session.get('papersection')
+
+    school_name = request.session.get('school_name')
+    exam_name = request.session.get('exam_name')
+    class_name = request.session.get('class_name')
+    subject_name = request.session.get('subject_name')
+    tool_user_id = request.session.get('tool_user_id')
+    tool_user = ToolLogin.objects.get(tool_id=tool_user_id)
+
+    # Create and save the Paper object
+    paper = Paper(
+        tool_login=tool_user,
+        school_name=school_name,
+        exam_name=exam_name,
+        class_name=class_name,
+        subject_name=subject_name,
+        paper_html=papersection
+    )
+    paper.save()
+    return render(request,'ToolCore/paper.html',{'papersection':papersection,'paperId':paper.id})
+
+from django.shortcuts import get_object_or_404
+
+def save_paper(request, paper_id):
+    paper = get_object_or_404(Paper, id=paper_id)
+
+    if request.method == 'POST' and 'pdf_file' in request.FILES and 'pdf_file2' in request.FILES:
+        pdf_file = request.FILES['pdf_file']
+        pdf_file2 = request.FILES['pdf_file2']
+        paper.saved_paper.save(pdf_file.name, pdf_file, save=True)
+        paper.saved_solution.save(pdf_file2.name, pdf_file2, save=True)
+        return JsonResponse({'status': 'success'})
     
-# 'data':data,'form':form,'questions':questions,'customquestions':customquestions,
-    
-    return render(request,'ToolCore/paper.html',{'papersection':papersection})
+    return JsonResponse({'status': 'failure'})
+
+
+
 
 def paperSolution(request):
-    # data = request.GET.get('data')
+    
     form = {
         'school_name':request.session.get('school_name'),
         'class_name':request.session.get('class_name'),
@@ -211,8 +246,122 @@ def paperSolution(request):
     customquestions = request.session.get('customquestions')
     allquestion = request.session.get('allquestion')
     context = {'questions':questions,'customquestions':customquestions,'allquestion':allquestion,'form':form}
-    return render(request,'ToolCore/paperSolution.html',context)
+    return render(request,'ToolCore/papersolution.html',context)
 
 
 def profile(request):
-    return render(request,'ToolCore/profile.html')
+    tool_user_id = request.session.get('tool_user_id')
+    tool_user = ToolLogin.objects.get(tool_id=tool_user_id)
+    papers = Paper.objects.filter(tool_login=tool_user)
+    context = {
+        'user':tool_user,
+        'papers': papers,
+    }
+    return render(request,'ToolCore/profile.html',context)
+
+
+# login register
+
+
+
+def UserRegister(request):
+    if request.method == 'POST':
+        form = UserLoginCreateForm(request.POST)
+        if form.is_valid():
+            password = form.cleaned_data['password']
+            confirm_password = form.cleaned_data['confirm_password']
+            if password == confirm_password:
+                user_form = form.save() 
+                tool_form = ToolLogin(
+                user=user_form,
+                name=user_form.name,
+                email=user_form.email,
+                tool_id=generate_id(),  
+                tool_password=generate_password(),
+                paper_credential=10,  
+                )
+                tool_form.save()
+                subject='Welcome ' + user_form.name
+                message='Thank you for registering. Your Tool Id: ' + str(tool_form.tool_id) + '. Your Tool Password: ' + tool_form.tool_password
+                send_mail(
+                subject,
+                message,
+                'pintupatidar555@gmail.com',  
+                [user_form.email], 
+                fail_silently=False,
+                )
+                messages.success(request, 'Account created successfully!')
+                # return render(request, 'ToolCore/homepage.html', {'user': user_form.name})
+            else:
+                messages.error(request, 'Passwords do not match')
+    else:
+        form = UserLoginCreateForm()
+    return render(request, 'ToolCore/UserLogin.html', {'form': form,'flag':'register'})
+
+def User_Login(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            
+            try:
+                user = UserLogin.objects.get(email=email)
+                if user.password == password:
+                    return render(request, 'ToolCore/homepage.html', {'user': user.name}) 
+                else:
+                    # form.add_error('password', 'Invalid password')
+                    messages.error(request, 'Invalid Password')
+            except UserLogin.DoesNotExist:
+                # form.add_error('email', 'User does not exist')
+                messages.error(request, 'User does not exist')
+    else:
+        form = LoginForm()
+    
+    return render(request, 'ToolCore/UserLogin.html', {'form': form})
+
+import uuid
+import string
+import random
+def generate_id():
+    unique_id = random.randint(100000, 999999)  # Generate a random 6-digit integer
+    while ToolLogin.objects.filter(tool_id=unique_id).exists():
+        unique_id = random.randint(100000, 999999)  # Generate a new ID if the current one already exists in the SecondForm model
+    return unique_id
+
+def generate_password(length=12):
+    # Define the criteria for a strong password
+    uppercase_letters = string.ascii_uppercase
+    lowercase_letters = string.ascii_lowercase
+    digits = string.digits
+    special_characters = string.punctuation
+
+    # Combine all the criteria together
+    all_characters = uppercase_letters + lowercase_letters + digits + special_characters
+
+    # Ensure the password contains at least one character from each criteria
+    password = random.choice(uppercase_letters) + random.choice(lowercase_letters) + random.choice(digits) + random.choice(special_characters)
+
+    # Generate the remaining characters for the password
+    password += ''.join(random.choice(all_characters) for _ in range(length - 4))
+
+    # Shuffle the password to ensure randomness
+    password_list = list(password)
+    random.shuffle(password_list)
+    password = ''.join(password_list)
+
+    return password
+
+def home(request):
+    if request.method == 'POST':
+        tool_id = request.POST.get('toolId')
+        tool_password = request.POST.get('toolPassword')
+        if ToolLogin.objects.filter(tool_id=tool_id, tool_password=tool_password).exists():
+            tool_user=ToolLogin.objects.filter(tool_id=tool_id)
+            request.session['tool_user_id']=tool_id
+            return JsonResponse({'status': 'success'})
+        else:
+            return JsonResponse({'status': 'failure'})
+    return render(request,'ToolCore/homepage.html')
+
+
