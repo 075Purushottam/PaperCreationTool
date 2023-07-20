@@ -223,7 +223,7 @@
                     type: form.attr("method"),
                     data: formData,
                     headers: {
-                                'X-CSRFToken': $('input[name=csrfmiddlewaretoken]').val()
+                                'X-CSRFToken': getCSRFToken()
                             },
                     success: function(response) {
                         if (response.status === "success") {
@@ -238,6 +238,15 @@
                     }
                 });
             });
+            function getCSRFToken() {
+            const cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('csrftoken='))
+            .split('=')[1];
+        
+        return cookieValue;
+        }
+
             function showFormMessage(type, message) {
             var formMessage = $("#formMessage");
             formMessage.text(message);
