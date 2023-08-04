@@ -108,6 +108,7 @@
                 <a href="{% url 'logout'%}">Logout</a></div>
                 {% else %}
                 <a href="{% url 'user-login'%}">Login</a>
+                <!-- <a href="#" onclick="openForm()">Login</a> -->
                 <a href="{% url 'user-register'%}">Signup</a>
                 {% endif %}
             </div>
@@ -131,7 +132,11 @@
         </div>
 
         <!-- <a href="{%url 'tool' %}" class="start-btn">Start Creating Today</a> -->
-        <button onclick="openForm()" class="start-btn">Open tool with given credential</button>
+        {% if user|length != 0  %}
+        <a href="{% url 'tool' %}" class="start-btn">Enter Tool</a>
+        {% else %}
+        <button onclick="openForm()" class="start-btn"><a href="{% url 'user-login'%}">Login</a></button>
+        {% endif %}
         
     </section>
     
@@ -150,7 +155,7 @@
                 Basically these layout provides main heading on the top of the paper then college name, time ,marks and
                 Instructions.
             </p>
-            <a href="{%url 'tool' %}">Create now</a>
+            <a href="#">Create now</a>
         </div>
     </section>
 

@@ -189,10 +189,14 @@ li {
     margin-right: 10px;
     background-color: #f2f2f2;
     border-radius: 5px;
+    overflow: auto;
+    height: 72vh;
 }
 
 .question-box h3 {
     margin: 0 0 10px 0;
+    border-bottom: 1px solid black;
+    padding: 0 0 8px 0px;
 }
 
 .question p ul {
@@ -228,6 +232,8 @@ li {
     background-color: #f2f2f2;
     border-radius: 5px;
     page-break-inside: avoid;
+    overflow: auto;
+    height: 72vh;
 }
 
 .paper-heading {
@@ -461,3 +467,7 @@ li {
     font-size: 20px;
     cursor: pointer;
   }
+
+
+ 
+  

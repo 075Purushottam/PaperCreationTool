@@ -159,7 +159,7 @@
         <div class="profile-pic">
             <div class="left-part">
                 <img src="{% static 'user.png' %}" alt="Profile Picture">
-                <h2>tooluser_{{user.tool_id}}</h2>
+                <h2>{{user.name}}</h2>
                 <p>As a software engineer, I believe in the power of technology to solve real-world problems and improve 
                     people's lives. I strive to create efficient and innovative software solutions that meet the needs 
                     of users and businesses.</p>
@@ -185,8 +185,8 @@
                     {% for paper in papers %}
                     <div class="paper-item">
                         <li class="paper-heading">{{paper.class_name}} {{paper.subject_name}}<span>
-                            <a href="#">View</a>
-                            <a href="#">Edit</a>
+                            <a href="{% url 'view-paper' paper.id %}">View</a>
+                            <a href="{% url 'edit-paper' paper.id %}">Edit</a>
                         </span></li>
                         <li class="paper-heading">{{paper.exam_name}} <span>Date: {{ paper.created_date|date:"Y-m-d" }}</span></li>
                         <li class="paper-heading">{{paper.school_name}}<span>Time: {{ paper.created_date|time:"H:i:s" }}</span></li>

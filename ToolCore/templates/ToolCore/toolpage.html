@@ -10,7 +10,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.0.5/jspdf.plugin.autotable.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<style>
+ 
 
+</style>
     <script>
 
         
@@ -81,6 +84,19 @@
 
         });
 
+        function updateHeadingSerialNumbers() {
+        var deleteableHeadings = $('h4.deleteable');
+
+        deleteableHeadings.each(function(index) {
+            var heading = $(this);
+            var serialNumberElement = heading.find('.heading-serial-number');
+
+
+            serialNumberElement.text((index + 1) + '.');
+        });
+        }
+
+
         var serial=0;
         function addTextToPaper() {
             // Get the input element
@@ -92,15 +108,24 @@
             // Create a new paragraph element
             var heading = document.createElement('h4');
             heading.classList.add('deleteable');
-            heading.textContent = text;
+            var childElement = document.createElement('span');
+            childElement.classList.add('heading-serial-number');
+            childElement.textContent = '1.';
+
+            var textNode = document.createTextNode(text);
+            heading.appendChild(childElement);
+            heading.appendChild(textNode);
 
             // Append the paragraph to the paper section
             var paperSection = document.getElementById('paper-section');
             paperSection.appendChild(heading);
 
+            // update serial no.
+            updateHeadingSerialNumbers();
             // Clear the input field
             input.value = '';
             serial=0;
+
         }
 
 
@@ -152,14 +177,6 @@
             var questionsUrl = '/api/v1/chapterFilterQuestions/?chapter_id=' + chapterId +'&question_type='+ type[t] +'&length='+ length +'&difficulty=' + difficulty;
             console.log(questionsUrl);
 
-            // if(length!=null && type[t]=="theory_questions"){
-            //     questionsUrl = '/api/v1/chapters/'+ chapterId + '/' +'theory_questions_length' + '/?length=' + length; 
-            // }
-
-            
-            // if(difficulty!=null && type[t]=="theory_questions"){
-            //     questionsUrl = '/api/v1/chapters/'+ chapterId + '/' +'theory_questions_difficulty' + '/?difficulty=' + difficulty; 
-            // }
             
             
             if(query.length!=0){
@@ -298,6 +315,7 @@
                 // Update the serial numbers
                 updateQuestionSerialNumbers(questionBox);
                 updateSerialNumbers(paperSection);
+                updateHeadingSerialNumbers();
             });
 
             paperSection.addEventListener('dragover', function (event) {
@@ -333,6 +351,7 @@
                 updateSerialNumbers(paperSection);
                 updateCount()
                 updateQuestionSerialNumbers(questionBox);
+                updateHeadingSerialNumbers();
             });
 
         });        
@@ -527,6 +546,25 @@
         </form>
     </div>
 
+    <div id="popupMergeForm" class="form-popup">
+        <form class="form-container" method="get">
+            <h2>Merge Question</h2>
+            <label for="question">Heading Serial no:</label>
+            <input id="heading-serial-no" name="heading-serial-no"></input>
+
+            <label for="answer">Question 1 Serial no:</label> 
+            <input id="serial-no-1" name="serial-no-1" required></input>
+
+            <label for="answer">Question 2 Serial no:</label> 
+            <input id="serial-no-2" name="serial-no-2" required></input>
+
+            <button type="submit" id="mergeInOr" class="btn">Make OR</button>
+            <button type="button" class="btn merge-cancel">Cancel</button>
+        </form>
+    </div>
+    
+
+
     <div class="navbar">
         <div class="logo"><img src="{% static 'Padaku_small.png' %}" alt="" style="width: 180px;"></div>
         <form id="search-form">
@@ -540,7 +578,7 @@
     </div>
     <div class="totalCountContainer">
         <!-- <button class="action" id="addButton">Add Question</button> -->
-        <h4>Remaining Credential: <span id="RempaperCount">{{user.paper_credential}}</span></h4>
+        <h4>Remaining Credential: <span id="RempaperCount">{{remaining_papers}}</span></h4>
         <h4>Number Of Questions Added: <span id="questionCount"></span></h4>
         <h4>Total Number Of Marks Added: <span id="marksCount"></span></h4>
         <h4 id="info">i</h4>
@@ -563,6 +601,7 @@
             {% for chapter in chapters %}
             <option value="{{chapter.id}}">{{chapter.chapter_name}}</option>
             {% endfor %}
+            
         </select>
 
         <label for="question-type">Question Type:</label>
@@ -603,9 +642,15 @@
             <a class="action" onclick="addTextCenterToPaper()" class="action">Add to center</a>
             </div>
             <button class="action" id="addButton">Add Question</button>
-            <button class="action" id="mergeInOr">Want to merge in or?</button>
+            <!-- <button class="action" id="mergeInOr">Want to merge in or?</button> -->
+            <button class="action" id="merge-form">Want to merge in or?</button>
             <div class="save">
-                <button  id="save-btn" class="action" >Save Paper</button>
+                <!-- {% if user.paper_credential > 9 %}
+                <button  id="credentail-btn" class="action">Buy more Credential</button>
+                {% else %}
+                
+                {% endif %} -->
+                <button  id="save-btn" class="action">Save Paper</button>
             </div>
             <!-- <h3>Add your Question</h3> -->
             
@@ -614,20 +659,21 @@
         </div>
 
         
-
-        
     </div>
+
 
     <div class="question-box" id="question-box">
-        <h3>Question Section</h3> 
+        <h3>Question Section</h3>
     </div>
-
 
 
 <div id="main-content">
+    {% if paper %}
     <div id="paper-section" class="paper-section">
-
-        <!-- <h3>Paper Section</h3> -->
+    {{paper.paper_html|safe}}
+    </div>
+    {%else%}
+    <div id="paper-section" class="paper-section">
         <div class="paper-heading">
             <div class="text-center">
                 <h3>{{form.school_name|upper}}</h3>
@@ -659,14 +705,56 @@
             {% endif %}
         </div>
         <hr>
-
-
     </div>
+    {% endif %}
+
 </div>
    
 
     <script>
 
+
+$(document).ready(function() {
+  var sliderContainer = $('.slider-container');
+  var sliderContent = $('#paper-section');
+  var sliderRoller = $('.slider-roller');
+
+  sliderContainer.on('mouseenter', function() {
+    if (sliderContent.outerHeight() > sliderContainer.outerHeight()) {
+      sliderRoller.show();
+    }
+  }).on('mouseleave', function() {
+    sliderRoller.hide();
+  });
+});
+
+$(document).ready(function() {
+  var sliderContainer = $('.slider-container');
+  var sliderContent = $('#question-box');
+  var sliderRoller = $('.slider-roller');
+
+  sliderContainer.on('mouseenter', function() {
+    if (sliderContent.outerHeight() > sliderContainer.outerHeight()) {
+      sliderRoller.show();
+    }
+  }).on('mouseleave', function() {
+    sliderRoller.hide();
+  });
+});
+
+$('div.question').each(function() {
+        var questionDiv = $(this);
+        var pTag = questionDiv.find('p');
+        var ulTag = questionDiv.find('.optionHolder');
+        
+        // Move ulTag inside pTag
+        ulTag.appendTo(pTag);
+        
+        // Remove ulTag from previous place
+        ulTag.remove();
+        });
+
+        
         document.getElementById("info").addEventListener("click", function() {
         var popup = document.getElementById("infopopup");
         if (popup.style.display === "none") {
@@ -687,9 +775,17 @@
             document.getElementById("popupForm").style.display = "block";
         });
 
+        document.getElementById("merge-form").addEventListener("click", function () {
+            document.getElementById("popupMergeForm").style.display = "block";
+        });
+
         // Close the popup form when the "Cancel" button is clicked
         document.querySelector(".cancel").addEventListener("click", function () {
             document.getElementById("popupForm").style.display = "none";
+        });
+
+        document.querySelector(".merge-cancel").addEventListener("click", function () {
+            document.getElementById("popupMergeForm").style.display = "none";
         });
 
         // Handle form submission
@@ -755,29 +851,49 @@
 
 
 
+        // const form = document.querySelector('.form-container');
+        // form.addEventListener('submit', function(event) {
+        // event.preventDefault();
+
         const  mergeButton = document.getElementById("mergeInOr");
-        mergeButton.addEventListener("click", function() {
-            
-        function findSpanBySerialNumber(serialNumber) {
-            const paperSection = document.getElementById('paper-section'); 
-            const questiondivs = paperSection.getElementsByClassName("question");  
+        mergeButton.addEventListener("click", function(event) {
+        event.preventDefault();
 
-        for (let i = 0; i < questiondivs.length; i++) {
-            const question = questiondivs[i];
-            const spanTag = question.getElementsByClassName("serial-number")[0];
-            
-            if (spanTag.textContent === serialNumber) {
-            return question;
-            }
-        }
-        
-        return null;
-        }
+function extractQuestionsByHeading(headingSerialNo, questionSerialNo) {
+  const headingSerialNos = document.querySelectorAll('.heading-serial-number');
+  const questions = [];
 
-        const targetSerialNumber = "1.";
-        const targetSerialNumber2 = "2.";
-        const ques1 = findSpanBySerialNumber(targetSerialNumber);
-        const ques2 = findSpanBySerialNumber(targetSerialNumber2);
+  headingSerialNos.forEach((headingSerialNoElement) => {
+    const currentHeadingSerialNo = headingSerialNoElement.textContent.trim();
+    if (currentHeadingSerialNo === headingSerialNo) {
+      questions[currentHeadingSerialNo] = [];
+    //   console.log("Match - serial :"  + currentHeadingSerialNo);
+      let currentElement = headingSerialNoElement.parentElement.nextElementSibling;
+      while (currentElement && currentElement.classList.contains('question')) {
+        const questionSerialNoElement = currentElement.querySelector('.serial-number');
+        if (questionSerialNoElement && questionSerialNoElement.textContent === questionSerialNo) {
+            // console.log(currentElement);
+            questions.push(currentElement);
+            break;
+        }
+        currentElement = currentElement.nextElementSibling;
+      }
+    }
+  });
+
+//   console.log(questions);
+  return questions[0];
+}
+
+        var heading_ser=document.getElementById('heading-serial-no').value;
+        var ser_1=document.getElementById('serial-no-1').value;
+        var ser_2=document.getElementById('serial-no-2').value;
+        const targetheadingSerialNumber=heading_ser+'.';
+        const targetSerialNumber1 = ser_1+'.';
+        const targetSerialNumber2 = ser_2+'.';
+        const ques1 = extractQuestionsByHeading(targetheadingSerialNumber,targetSerialNumber1);
+        console.log('question - 1 :' + ques1);
+        const ques2 = extractQuestionsByHeading(targetheadingSerialNumber,targetSerialNumber2);
         if (ques1 && ques2) {
             const id1 = ques1.id;
             const id2 = ques2.id;
@@ -800,8 +916,10 @@
             Orquestions.push({ question1: id1, question2: id2 });
             // questionIds.push(ques1);
             updateCount();
+            var paperSection = document.getElementById('paper-section')
+            updateSerialNumbers(paperSection);
         } else {
-           alert("Both Serial number not found");
+            alert("Both Serial number not found");
         }
         
     });

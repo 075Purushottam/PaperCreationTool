@@ -186,7 +186,7 @@
  
         <div class="box">
             {% if user_id %}
-            <h2 class="tooluser_heading">Welcome, tooluser_{{ user_id }}</h2>
+            <h2 class="tooluser_heading">Welcome, {{ user_id }}</h2>
         {% endif %}
             <form method="POST">
             {% csrf_token %}

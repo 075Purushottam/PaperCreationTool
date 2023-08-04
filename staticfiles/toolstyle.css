@@ -30,7 +30,10 @@
     padding: 3px;
 }
 .navbar form{
-    width: 70%;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    padding: 0px 15px;
 }
 .search-btn{
     text-decoration: none;
@@ -38,7 +41,7 @@
     padding: 16px 4px;
     border: 1px solid #333;
     border-radius: 0px 8px 8px 0px;
-    margin: 5px auto;
+    margin: 5px 0px;
     font-size: medium;
     min-width: 136px;
     text-align: center;
@@ -61,6 +64,7 @@
     outline: none;
     font-size: 16px;
     font-style: italic;
+    margin: 5px;
 }
 
 #search:hover{
@@ -154,6 +158,10 @@ li {
     font-weight: 400;
   }
 
+  #infopopup ul li {
+    list-style-type: auto;
+}
+
   #info:hover{
     background-color: #333;
     color: #fff;
@@ -181,10 +189,14 @@ li {
     margin-right: 10px;
     background-color: #f2f2f2;
     border-radius: 5px;
+    overflow: auto;
+    height: 72vh;
 }
 
 .question-box h3 {
     margin: 0 0 10px 0;
+    border-bottom: 1px solid black;
+    padding: 0 0 8px 0px;
 }
 
 .question p ul {
@@ -220,6 +232,8 @@ li {
     background-color: #f2f2f2;
     border-radius: 5px;
     page-break-inside: avoid;
+    overflow: auto;
+    height: 72vh;
 }
 
 .paper-heading {
@@ -322,10 +336,32 @@ li {
 /* CSS for the main content section */
 
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 600px) {
     .navbar {
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    .navbar {
+        padding: 20px;
+        margin: 10px 0px;
+    }
+    .navbar form{
+        display: flex;
+        width: 100%;
+        justify-content: center;
+    }
+    #search {
+        padding: 16px;
+        width: 65%;
+        height: 28px;
+        margin: 5px;
+        font-size: 12px;
+    }
+    .search-btn {
+        padding: 16px 4px;
+        margin:5px;
+        min-width: 100px;
     }
 
     .nav-links {
@@ -338,6 +374,13 @@ li {
         max-width: none;
         width: 100%;
         margin-right: 0;
+    }
+
+    .paper-section h3 {
+        font-size: 10px;
+    }
+    .heading-top{
+        font-size: 8px;
     }
 
 }
@@ -409,10 +452,7 @@ li {
     z-index: 1;
   }
   
-  #infopopup ul {
-    list-style-type: none;
-    padding: 0;
-  }
+ 
   
   #infopopup li {
     margin-bottom: 5px;
@@ -427,4 +467,7 @@ li {
     font-size: 20px;
     cursor: pointer;
   }
+
+
+ 
   

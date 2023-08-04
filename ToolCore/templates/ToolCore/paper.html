@@ -63,7 +63,11 @@
 <body>
 
     <div class="paper-section" id="paper-section">
+        {% if papersection %}
         {{papersection|safe}}
+        {% else %}
+        {{paper.paper_html|safe}}
+        {% endif %}
     </div>
     
     <div class="btn-section">

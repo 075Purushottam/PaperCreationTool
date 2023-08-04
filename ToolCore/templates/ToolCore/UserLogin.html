@@ -59,9 +59,9 @@
 </style>
 {% block content %}
 
-{% if form.errors %}
+<!-- {% if form.errors %}
   <p class="error">Invalid email or password</p>
-{% endif %}
+{% endif %} -->
 {% if messages %}
   <ul class="messages">
     {% for message in messages %}
@@ -93,4 +93,6 @@
   <a href="{%url 'user-login' %}">Login</a>
 </div>
 {%endif%}
+
+
 {% endblock %}

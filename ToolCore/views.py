@@ -15,7 +15,7 @@ from django.template import RequestContext
 from django.views import View
 from django.core.mail import send_mail
 import json
-
+import uuid
 from .forms import UserLoginCreateForm,LoginForm
 from .models import ToolLogin,UserLogin,Paper
 
@@ -119,6 +119,8 @@ def bookChapter(request):
 
     tool_user_id = request.session.get('tool_user_id')
     user = ToolLogin.objects.get(tool_id=tool_user_id)
+    papers = Paper.objects.filter(tool_login=user)
+    remaining_papers=user.paper_credential-len(papers)
 
 
     BookChapter = {}
@@ -129,17 +131,18 @@ def bookChapter(request):
     
     if request.method == 'POST':
         selected_ids = request.POST.getlist('selected_ids')
+        request.session['selected_ids'] = selected_ids
         selected_chapters = []
         for id in selected_ids:
             chapter_detial = requests.get('http://54.252.241.208/api/v1/chapters/' + str(id) + '/')
             chapterDetail = chapter_detial.json()
             selected_chapters.append(chapterDetail)
            
-        context = {'form':form,'BookChapter':BookChapter,'chapters':selected_chapters,'user':user}
+        context = {'form':form,'BookChapter':BookChapter,'chapters':selected_chapters,'user':user,'papers':papers,'remaining_papers':remaining_papers}
 
         return render(request,'ToolCore/toolpage.html',context)
     
-    context = {'form':form,'BookChapter':BookChapter,'user':user}
+    context = {'form':form,'BookChapter':BookChapter,'user':user,}
     return render(request,'ToolCore/book-chapter.html',context)
 
 
@@ -259,10 +262,60 @@ def profile(request):
     }
     return render(request,'ToolCore/profile.html',context)
 
+def viewPaper(request,paper_id):
+    tool_user_id = request.session.get('tool_user_id')
+    user = ToolLogin.objects.get(tool_id=tool_user_id)
+    papers = Paper.objects.filter(tool_login=user)
+    remaining_papers=user.paper_credential-len(papers)
+    paper = get_object_or_404(Paper, id=paper_id)
+
+    context = {
+        'user':user,
+        'paper':paper,
+    }
+    return render(request,'Toolcore/paper.html',context)
+def editPaper(request,paper_id):
+
+    tool_user_id = request.session.get('tool_user_id')
+    user = ToolLogin.objects.get(tool_id=tool_user_id)
+    papers = Paper.objects.filter(tool_login=user)
+    remaining_papers=10-len(papers)
+    paper = get_object_or_404(Paper, id=paper_id)
+    selected_chapters = []
+    selected_ids = request.session.get('selected_ids')
+    for id in selected_ids:
+        chapter_detial = requests.get('http://54.252.241.208/api/v1/chapters/' + str(id) + '/')
+        chapterDetail = chapter_detial.json()
+        selected_chapters.append(chapterDetail)
+
+    context = {
+        'user':user,
+        'paper':paper,
+        'chapters':selected_chapters,
+        'remaining_papers':remaining_papers
+    }
+
+    return render(request,'ToolCore/toolpage.html',context)
 
 # login register
 
 
+def verify(request,token):
+    try:
+        user_form = UserLogin.objects.get(email_token=token)
+        user_form.is_verified = True
+        tool_form = ToolLogin(
+        user=user_form,
+        name=user_form.name,
+        email=user_form.email,
+        tool_id=user_form.email,  
+        tool_password=user_form.password,
+        paper_credential=10,  
+        )
+        tool_form.save()
+    except Exception as e:
+        return HttpResponse(e)
+    return redirect('home')
 
 def UserRegister(request):
     if request.method == 'POST':
@@ -271,18 +324,11 @@ def UserRegister(request):
             password = form.cleaned_data['password']
             confirm_password = form.cleaned_data['confirm_password']
             if password == confirm_password:
-                user_form = form.save() 
-                tool_form = ToolLogin(
-                user=user_form,
-                name=user_form.name,
-                email=user_form.email,
-                tool_id=generate_id(),  
-                tool_password=generate_password(),
-                paper_credential=10,  
-                )
-                tool_form.save()
+                user_form = form.save()
+                user_form.email_token = str(uuid.uuid4())  
+                user_form = form.save()
                 subject='Welcome ' + user_form.name
-                message='Thank you for registering. Your Tool Id: ' + str(tool_form.tool_id) + '. Your Tool Password: ' + tool_form.tool_password
+                message='Thank you for registering.' + f'Click on the link to verify account http://127.0.0.8000/verify/{user_form.email_token}/'
                 send_mail(
                 subject,
                 message,
@@ -290,10 +336,14 @@ def UserRegister(request):
                 [user_form.email], 
                 fail_silently=False,
                 )
-                messages.success(request, 'Account created successfully!')
+                messages.success(request, 'Verify Account then login and simply use tool')
                 # return render(request, 'ToolCore/homepage.html', {'user': user_form.name})
             else:
-                messages.error(request, 'Passwords do not match')
+                messages.error(request, 'Passwords do not match.')
+        else:
+                email = request.POST.get('email')
+                if UserLogin.objects.filter(email=email).exists():
+                    messages.error(request, 'Please login you already have an account with these email.')
     else:
         form = UserLoginCreateForm()
     return render(request, 'ToolCore/UserLogin.html', {'form': form,'flag':'register'})
@@ -320,37 +370,6 @@ def User_Login(request):
     
     return render(request, 'ToolCore/UserLogin.html', {'form': form})
 
-import uuid
-import string
-import random
-def generate_id():
-    unique_id = random.randint(100000, 999999)  # Generate a random 6-digit integer
-    while ToolLogin.objects.filter(tool_id=unique_id).exists():
-        unique_id = random.randint(100000, 999999)  # Generate a new ID if the current one already exists in the SecondForm model
-    return unique_id
-
-def generate_password(length=12):
-    # Define the criteria for a strong password
-    uppercase_letters = string.ascii_uppercase
-    lowercase_letters = string.ascii_lowercase
-    digits = string.digits
-    special_characters = string.punctuation
-
-    # Combine all the criteria together
-    all_characters = uppercase_letters + lowercase_letters + digits + special_characters
-
-    # Ensure the password contains at least one character from each criteria
-    password = random.choice(uppercase_letters) + random.choice(lowercase_letters) + random.choice(digits) + random.choice(special_characters)
-
-    # Generate the remaining characters for the password
-    password += ''.join(random.choice(all_characters) for _ in range(length - 4))
-
-    # Shuffle the password to ensure randomness
-    password_list = list(password)
-    random.shuffle(password_list)
-    password = ''.join(password_list)
-
-    return password
 
 def home(request):
     if request.method == 'POST':
@@ -363,5 +382,40 @@ def home(request):
         else:
             return JsonResponse({'status': 'failure'})
     return render(request,'ToolCore/homepage.html')
+
+
+import uuid
+import string
+import random
+def generate_id():
+    unique_id = random.randint(100000, 999999)  # Generate a random 6-digit integer
+    while ToolLogin.objects.filter(tool_id=unique_id).exists():
+        unique_id = random.randint(100000, 999999)  # Generate a new ID if the current one already exists in the SecondForm model
+    return unique_id
+
+# def generate_password(length=12):
+#     # Define the criteria for a strong password
+#     uppercase_letters = string.ascii_uppercase
+#     lowercase_letters = string.ascii_lowercase
+#     digits = string.digits
+#     special_characters = string.punctuation
+
+#     # Combine all the criteria together
+#     all_characters = uppercase_letters + lowercase_letters + digits + special_characters
+
+#     # Ensure the password contains at least one character from each criteria
+#     password = random.choice(uppercase_letters) + random.choice(lowercase_letters) + random.choice(digits) + random.choice(special_characters)
+
+#     # Generate the remaining characters for the password
+#     password += ''.join(random.choice(all_characters) for _ in range(length - 4))
+
+#     # Shuffle the password to ensure randomness
+#     password_list = list(password)
+#     random.shuffle(password_list)
+#     password = ''.join(password_list)
+
+#     return password
+
+
 
 
