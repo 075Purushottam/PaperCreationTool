@@ -328,7 +328,7 @@ def UserRegister(request):
                 user_form.email_token = str(uuid.uuid4())  
                 user_form = form.save()
                 subject='Welcome ' + user_form.name
-                message='Thank you for registering.' + f'Click on the link to verify account http://127.0.0.8000/verify/{user_form.email_token}/'
+                message='Thank you for registering.' + f'Click on the link to verify account http://54.252.241.208/verify/{user_form.email_token}/'
                 send_mail(
                 subject,
                 message,
