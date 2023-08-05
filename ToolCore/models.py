@@ -22,7 +22,7 @@ class PaperDetail(models.Model):
 
 class UserLogin(models.Model):
     name = models.CharField(max_length=100)
-    email = models.EmailField(null=True)
+    email = models.EmailField(unique=True)
     email_token = models.CharField(max_length=200,default=None,null=True)
     is_verified = models.BooleanField(default=False)
     mobile = models.CharField(max_length=15)
@@ -35,7 +35,7 @@ class UserLogin(models.Model):
 class ToolLogin(models.Model):
     user = models.OneToOneField(UserLogin, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
-    email = models.EmailField(null=True)
+    email = models.EmailField(unique=True)
     tool_id = models.CharField(max_length=100,unique=True)
     tool_password = models.CharField(max_length=128)
     paper_credential = models.IntegerField()

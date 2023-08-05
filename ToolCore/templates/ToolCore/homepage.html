@@ -135,7 +135,7 @@
         {% if user|length != 0  %}
         <a href="{% url 'tool' %}" class="start-btn">Enter Tool</a>
         {% else %}
-        <button onclick="openForm()" class="start-btn"><a href="{% url 'user-login'%}">Login</a></button>
+        <button onclick="openForm()" class="start-btn">Login</button>
         {% endif %}
         
     </section>
@@ -165,9 +165,9 @@
             <form method="POST" id="loginForm">
                 {% csrf_token %}
                 <div id="formMessage" class="form-message"></div>
-                <label for="toolId">Tool ID:</label>
+                <label for="toolId">Email ID:</label>
                 <input type="text" id="toolId" name="toolId">
-                <label for="toolPassword">Tool Password:</label>
+                <label for="toolPassword">Password:</label>
                 <input type="password" id="toolPassword" name="toolPassword">
                 <input type="submit" value="Submit">
             </form>

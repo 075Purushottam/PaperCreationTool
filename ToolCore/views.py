@@ -358,6 +358,8 @@ def User_Login(request):
             try:
                 user = UserLogin.objects.get(email=email)
                 if user.password == password:
+                    tool_user=ToolLogin.objects.filter(email=email)
+                    request.session['tool_user_id']=email
                     return render(request, 'ToolCore/homepage.html', {'user': user.name}) 
                 else:
                     # form.add_error('password', 'Invalid password')
@@ -382,39 +384,6 @@ def home(request):
         else:
             return JsonResponse({'status': 'failure'})
     return render(request,'ToolCore/homepage.html')
-
-
-import uuid
-import string
-import random
-def generate_id():
-    unique_id = random.randint(100000, 999999)  # Generate a random 6-digit integer
-    while ToolLogin.objects.filter(tool_id=unique_id).exists():
-        unique_id = random.randint(100000, 999999)  # Generate a new ID if the current one already exists in the SecondForm model
-    return unique_id
-
-# def generate_password(length=12):
-#     # Define the criteria for a strong password
-#     uppercase_letters = string.ascii_uppercase
-#     lowercase_letters = string.ascii_lowercase
-#     digits = string.digits
-#     special_characters = string.punctuation
-
-#     # Combine all the criteria together
-#     all_characters = uppercase_letters + lowercase_letters + digits + special_characters
-
-#     # Ensure the password contains at least one character from each criteria
-#     password = random.choice(uppercase_letters) + random.choice(lowercase_letters) + random.choice(digits) + random.choice(special_characters)
-
-#     # Generate the remaining characters for the password
-#     password += ''.join(random.choice(all_characters) for _ in range(length - 4))
-
-#     # Shuffle the password to ensure randomness
-#     password_list = list(password)
-#     random.shuffle(password_list)
-#     password = ''.join(password_list)
-
-#     return password
 
 
 
