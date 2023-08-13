@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="{% static 'paper.css' %}">
+    <link rel="stylesheet" href="{% static 'solution.css' %}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
@@ -73,12 +74,74 @@
     <div class="btn-section">
     <button  class="action" >Print</button>
     <button  onclick="generatePDF()" class="action" >Download Paper</button>
-    <button  class="action" ><a href="{% url 'paper-solution'%}">View Solution</a></button>
+    <button  class="action" ><a href="{% url 'paper-solution' paperId %}">View Solution</a></button>
     </div>
 
 
     <div id="paper-solution" style="display: none;">
-        <h3>Paper Solution</h3>
+      {% if paper %}
+      {{paper.solution_html|safe}}
+      {% else %}
+      <h2 class="sol-heading">Paper Solution</h2>
+      <div class="paper-heading">
+          <div class="text-center">
+              <h3>{{form.school_name|upper}}</h3>
+          </div>
+          <h3>{{form.exam_name|upper}}</h3>
+
+
+          <div class="heading-top">
+              <div>
+                  <p>Time: {{form.duration}}:00 Hour</p>
+                  <p>Max Marks: {{form.marks}}</p>
+              </div>
+              <div>
+                  <h3>{{form.class_name|upper}} {{form.subject_name|upper}}</h3>
+              </div>
+              <div>
+                  <p>Date: {{form.date}}</p>
+                  <p>Roll no:________</p>
+              </div>
+          </div>
+      </div>
+      <hr>
+      {% for item in allquestion%}
+      <div class="only question">
+          <span class="serial-number">Question {{item.serialno}}</span>
+          <div class="multiple-answer">
+              <p id="{{item.id1}}">
+                  {% if item.question2 %}
+                  (a) {% endif %}
+                  {{item.question1}}
+              </p>
+
+              {% if item.question2 %}
+              <span class="or">OR</span>
+              <p id="{{item.id2}}">
+                  (b) {{item.question2}}
+              </p>
+              {% endif %}
+          </div>
+          <span class="marks">{{item.marks}}</span>
+      </div>
+      <div class="question answer">
+          <span class="serial-number">Answer:</span>
+          <div class="multiple-answer">
+              <p>
+                  {% if item.answer2 %}
+                  (a)
+                  {% endif %}
+                  {{item.answer1}}
+              </p>
+              {% if item.answer2 %}
+              <span class="or">OR</span>
+
+              <p> (b) {{item.answer2}} </p>
+              {% endif %}
+          </div>
+      </div>
+      {% endfor %}
+      {%endif%}
     </div>
 
     <script>
@@ -100,6 +163,7 @@
 
         const element = document.getElementById('paper-section'); 
         const solutionelement = document.getElementById('paper-solution').innerHTML; 
+        formData.append('solution_html', solutionelement);
             const options = {
                 margin:[10,0,0,0],
                 autoScale:true,

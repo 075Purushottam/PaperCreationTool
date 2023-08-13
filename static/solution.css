@@ -7,6 +7,7 @@
     display: flex;
     flex-wrap: nowrap; 
     align-items: baseline;
+    margin: 2px;
 }
 .serial-number{
     margin-left: 23px;
@@ -33,7 +34,7 @@ word-break: break-word;
 }
 
 .answer p{
-    margin-left: 35px;
+    margin-left: 30px;
 }
 .marks{
     margin-left:auto;
@@ -56,3 +57,32 @@ word-break: break-word;
 .heading-top div{
     text-align: left;
 }
+
+.multiple-answer{
+    display: flex;
+    flex-direction:column;
+}
+
+span.or{
+    text-align: center;
+}
+
+.only{
+    margin-top: 10px;
+}
+.action{
+    text-decoration: none;
+    color: #333;
+    padding: 8px 16px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    margin: 5px auto;
+    min-width: 220px;
+    text-align: center;
+    font-weight: 400;
+  }
+
+  .action:hover{
+    background-color: #333;
+    color: #fff;
+  }

@@ -15,6 +15,7 @@ from django.template import RequestContext
 from django.views import View
 from django.core.mail import send_mail
 import json
+import html
 import uuid
 from .forms import UserLoginCreateForm,LoginForm
 from .models import ToolLogin,UserLogin,Paper
@@ -205,6 +206,20 @@ def paper(request):
     tool_user_id = request.session.get('tool_user_id')
     tool_user = ToolLogin.objects.get(tool_id=tool_user_id)
 
+    form = {
+        'school_name':school_name,
+        'class_name':class_name,
+        'subject_name':subject_name,
+        'duration':request.session.get('duration'),
+        'marks':request.session.get('marks'),
+        'exam_name':exam_name,
+    }
+    
+    questions = request.session.get('questions')
+    customquestions = request.session.get('customquestions')
+    allquestion = request.session.get('allquestion')
+    context = {'questions':questions,'customquestions':customquestions,'allquestion':allquestion,'form':form}
+
     # Create and save the Paper object
     paper = Paper(
         tool_login=tool_user,
@@ -215,7 +230,9 @@ def paper(request):
         paper_html=papersection
     )
     paper.save()
-    return render(request,'ToolCore/paper.html',{'papersection':papersection,'paperId':paper.id})
+    context['papersection']=papersection
+    context['paperId']=paper.id
+    return render(request,'ToolCore/paper.html',context)
 
 from django.shortcuts import get_object_or_404
 
@@ -225,6 +242,8 @@ def save_paper(request, paper_id):
     if request.method == 'POST' and 'pdf_file' in request.FILES and 'pdf_file2' in request.FILES:
         pdf_file = request.FILES['pdf_file']
         pdf_file2 = request.FILES['pdf_file2']
+        solution_html = request.POST.get('solution_html')
+        paper.solution_html = solution_html
         paper.saved_paper.save(pdf_file.name, pdf_file, save=True)
         paper.saved_solution.save(pdf_file2.name, pdf_file2, save=True)
         return JsonResponse({'status': 'success'})
@@ -234,21 +253,28 @@ def save_paper(request, paper_id):
 
 
 
-def paperSolution(request):
+def paperSolution(request,paper_id):
     
-    form = {
-        'school_name':request.session.get('school_name'),
-        'class_name':request.session.get('class_name'),
-        'subject_name':request.session.get('subject_name'),
-        'duration':request.session.get('duration'),
-        'marks':request.session.get('marks'),
-        'exam_name':request.session.get('exam_name'),
+    # form = {
+    #     'school_name':request.session.get('school_name'),
+    #     'class_name':request.session.get('class_name'),
+    #     'subject_name':request.session.get('subject_name'),
+    #     'duration':request.session.get('duration'),
+    #     'marks':request.session.get('marks'),
+    #     'exam_name':request.session.get('exam_name'),
+    # }
+    
+    # questions = request.session.get('questions')
+    # customquestions = request.session.get('customquestions')
+    # allquestion = request.session.get('allquestion')
+    tool_user_id = request.session.get('tool_user_id')
+    user = ToolLogin.objects.get(tool_id=tool_user_id)
+    papers = Paper.objects.filter(tool_login=user)
+    remaining_papers=user.paper_credential-len(papers)
+    paper = get_object_or_404(Paper, id=paper_id)
+    context = {
+        'paper':paper,
     }
-    
-    questions = request.session.get('questions')
-    customquestions = request.session.get('customquestions')
-    allquestion = request.session.get('allquestion')
-    context = {'questions':questions,'customquestions':customquestions,'allquestion':allquestion,'form':form}
     return render(request,'ToolCore/papersolution.html',context)
 
 
@@ -268,12 +294,17 @@ def viewPaper(request,paper_id):
     papers = Paper.objects.filter(tool_login=user)
     remaining_papers=user.paper_credential-len(papers)
     paper = get_object_or_404(Paper, id=paper_id)
+    decoded_solution_html = html.unescape(paper.solution_html)
+    paper.solution_html = decoded_solution_html
+    paper.save()
 
     context = {
         'user':user,
         'paper':paper,
+        'paperId':paper_id,
     }
-    return render(request,'Toolcore/paper.html',context)
+    return render(request,'ToolCore/paper.html',context)
+
 def editPaper(request,paper_id):
 
     tool_user_id = request.session.get('tool_user_id')
