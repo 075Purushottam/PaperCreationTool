@@ -145,7 +145,17 @@ li {
 .heading-btn a{
     padding: 8px 18px;
 }
+.heading-btn button{
+    padding: 8px 18px;
+}
 
+.merge-btn{
+    display: flex;
+    justify-content: center;
+}
+.merge-btn button{
+    min-width: 115px;
+}
 .action{
     text-decoration: none;
     color: #333;
@@ -219,7 +229,8 @@ li {
     background-color: #fff;
     cursor: move;
 }
-
+<button class="action" id="merge-form">Merge OR</button>
+            <button class="action" id="mergeInOr">Split OR</button>
 .question .serial-number {
     font-weight: bold;
 } */
@@ -439,6 +450,7 @@ li {
 /* Styles for the button */
 #addButton {
     margin-top: 20px;
+    min-width: 240px;
 }
 
 #infopopup {

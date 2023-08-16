@@ -8,10 +8,26 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css" integrity="sha384-b6lVK+yci+bfDmaY1u0zE8YYJt0TZxLEAFyYSLHId4xoVvsrQu3INevFKo+Xir8e" crossorigin="anonymous">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+crossorigin="anonymous"></script>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@100;400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 <style>
+    body{
+    background-color: rgb(66, 72, 116);
+    color: aliceblue;
+    }
+    li {
+    list-style: none;
+    }
+
+    a {
+        text-decoration: none;
+        color: aliceblue;
+    }
     /* Styling for the overlay */
     .overlay {
         position: fixed;
@@ -39,6 +55,7 @@
         text-align: center;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         position: relative;
+        color: black;
     }
 
     /* Styling for the close button */
@@ -95,9 +112,47 @@
 
 </style>
 </head>
-
 <body>
-    <header>
+
+    <nav>
+        <div class="logo">
+            <h1>PaperBuilder</h1>
+        </div>
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="menu-div" id="menu-div">
+            <ul class="menu">
+                <li>About</li>
+                <li>Price</li>
+                <li>Service</li>
+            </ul>
+            <ul class="login-btn">
+                {% if user|length != 0  %}     
+                <div class="d-flex flex-row ">{{ user|upper }}
+                <a href="{% url 'logout'%}">Logout</a></div>
+                {% else %}
+                <li><a href="{% url 'user-login'%}">Login</a></li>
+                <li><a href="{% url 'user-register'%}">Signup</a></li>
+                {% endif %}
+              
+            </ul>
+        </div>
+    </nav>
+    <header >
+        <h1 class="main-description">Introducing Our New Exam Paper Creation Tool for Enhanced Experience.</h1>
+        <p class="main-description-p">Welcome to <span class="underline">PaperBuilder</span> the future of exam paper creation. We offer an innovative interface that transforms the way educators, schools, and institutions prepare assessments. With an extensive question database covering classes 6 to 12 and various subjects, our platform is your one-stop solution for creating customized exam papers.</p>
+        <div >
+            {% if user|length != 0  %}
+            <a href="{% url 'tool' %}" class="create-now">Create now</a>
+            {% else %}
+            <button onclick="openForm()" class="start-btn">Login</button>
+            {% endif %}
+        </div>
+    </header>
+    <!-- <header>
         <nav class="top-nav">
             <div class="logo">
                 <img src="{% static 'Padaku_small.png' %}" alt="Logo">
@@ -108,7 +163,6 @@
                 <a href="{% url 'logout'%}">Logout</a></div>
                 {% else %}
                 <a href="{% url 'user-login'%}">Login</a>
-                <!-- <a href="#" onclick="openForm()">Login</a> -->
                 <a href="{% url 'user-register'%}">Signup</a>
                 {% endif %}
             </div>
@@ -131,34 +185,14 @@
             
         </div>
 
-        <!-- <a href="{%url 'tool' %}" class="start-btn">Start Creating Today</a> -->
         {% if user|length != 0  %}
         <a href="{% url 'tool' %}" class="start-btn">Enter Tool</a>
         {% else %}
         <button onclick="openForm()" class="start-btn">Login</button>
         {% endif %}
         
-    </section>
+    </section> -->
     
-    <div class="format-heading">
-        <h2>Choose One of the Formats</h2>
-    </div>
-
-    <section class="format-section">
-        <div class="format-left">
-            <img src="{% static 'paper-format.jpg' %}" alt="Paper Format Design">
-        </div>
-        <div class="format-right">
-            <h2>School Format with Design Layout</h2>
-            <p>College format having basic layout as you see image on left side,i will give you little introduction of
-                that
-                Basically these layout provides main heading on the top of the paper then college name, time ,marks and
-                Instructions.
-            </p>
-            <a href="#">Create now</a>
-        </div>
-    </section>
-
     <div id="popupForm" class="overlay">
         <div class="popup-form">
             <span class="close-button" onclick="closeForm()">&times;</span>
@@ -174,32 +208,186 @@
         </div>
     </div>
 
+    <section class="service">
+        <h1 class="text-center">Access Our Services More Easily</h1>
+    </section>
+
+    <section class="feature">
+        <div class="feature-main">
+            <div class="feature-left">
+                <div class="description-container">
+                <h1 class="text-left">Revolutionizing Exam Paper Creation for Educators</h1>
+                <ul>  
+                    <li>  Effortless Drag-and-Drop Functionality.</li>
+                    <li>  Unparalleled Question Variety Accommodation.</li>
+                    <li>  Streamlined Download and Print Process.</li>
+                    <li>  Chapter-wise Question Selection.</li>
+                    <li>  Effortless Filtering for Ultimate Flexibility.</li>
+                    <li>  Holistic Question Database from Class 6 to Class 12.</li>
+                </ul>
+            </div>
+            </div>
+            <div class="feature-right">
+                <div class="feature-card-row1">
+                    <div class="feature-card">
+                        <img src="{% static 'drag-and-drop (1).png' %}" alt="">
+                        <h4 class="text-center">Intuitive Drag-and-Drop Interface</h4>
+                        <p>Our user-friendly drag-and-drop interface allows you to arrange questions effortlessly, move items between sections, and experiment with question types.</p>
+                    </div>
+                    <div class="feature-card">
+                        <img src="{% static 'save-file.png' %}" alt="">
+                        <h4 class="text-center">Effortless Saving and Downloading</h4>
+                        <p >Save your work-in-progress, preview your exam paper's layout, and with a simple click, download a professionally formatted PDF version ready for distribution.</p>
+                    </div>
+                </div>
+                <div class="feature-card-row2">
+                    <div class="feature-card">
+                        <img src="{% static 'filter.png' %}" alt="">
+                        <h4 class="text-center">Flexible Filtering Options</h4>
+                        <p>Our flexible filtering system empowers you to tailor your assessments to your curriculum objectives, providing the ultimate flexibility in question selection.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+ 
+    <section class="curriculum">
+        <div class="curriculum-heading">
+            <p class="discover">Discover the Joy of Creating Exam Papers</p>
+        </div>
+        <div class="curriculum-main">
+            <div class="curriculum-left">
+                <div class="curriculum-description">
+                <h1 class="text-left">Login & Experience Free Credits</h1>
+                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aspernatur consequatur fuga veritatis, at suscipit repudiandae sit tenetur dicta tempore, repellat explicabo eveniet ullam quod sint corporis magnam molestias, ratione ducimus?</p>
+                </div>
+            </div>
+            <div class="curriculum-right">
+                <img src="{% static 'step1.jpg' %}" alt="">
+            </div>
+        </div>
+        <div class="curriculum-main cmr">
+            <div class="curriculum-right">
+                <img src="{% static 'step2.jpg' %}" alt="">
+            </div>
+            <div class="curriculum-left">
+                <div class="curriculum-description">
+                <h1 class="text-left">Fill Class & Subject</h1>
+                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aspernatur consequatur fuga veritatis, at suscipit repudiandae sit tenetur dicta tempore, repellat explicabo eveniet ullam quod sint corporis magnam molestias, ratione ducimus?</p>
+                </div>
+            </div>
+        </div>
+        <div class="curriculum-main">
+            <div class="curriculum-left">
+                <div class="curriculum-description">
+                <h1 class="text-left">Add Chapters from different books</h1>
+                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aspernatur consequatur fuga veritatis, at suscipit repudiandae sit tenetur dicta tempore, repellat explicabo eveniet ullam quod sint corporis magnam molestias, ratione ducimus?</p>
+                </div>
+            </div>
+            <div class="curriculum-right">
+                <img src="{% static 'creation_process.jpg' %}" alt="">
+            </div>
+        </div>
+        <div class="curriculum-main cmr">
+            <div class="curriculum-right">
+                <img src="{% static 'f3 (2).jpg' %}" alt="">
+            </div>
+            <div class="curriculum-left">
+                <div class="curriculum-description">
+                <h1 class="text-left">Time to make a paper</h1>
+                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aspernatur consequatur fuga veritatis, at suscipit repudiandae sit tenetur dicta tempore, repellat explicabo eveniet ullam quod sint corporis magnam molestias, ratione ducimus?</p>
+                </div>
+            </div>
+        </div>
+        <div class="curriculum-main">
+            <div class="curriculum-left">
+                <div class="curriculum-description">
+                <h1 class="text-left">Save & Download Paper with Solutions</h1>
+                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aspernatur consequatur fuga veritatis, at suscipit repudiandae sit tenetur dicta tempore, repellat explicabo eveniet ullam quod sint corporis magnam molestias, ratione ducimus?</p>
+                </div>
+            </div>
+            <div class="curriculum-right">
+                <img src="{% static 'save&download.jpg' %}" alt="">
+            </div>
+        </div>
+        
+    </section>
+    <section class="customer m-5">
+        <div class="text-center">
+            <p class="customer-ct">12k+ Happy Customers</p>
+            <h1>Users Love</h1>
+        </div>
+    </section>
+
+    <div class="review-container">
+        <div class="row-review row1">
+            <div class="customer-card">
+                <div class="customer-info">
+                    <h3>Smitha Rathore</h3>
+                    <p>Excellent service! PaperBilder helped me create top-quality exam papers quickly.</p>
+                </div>
+            </div>
+            <div class="customer-card">
+                <div class="customer-info">
+                    <h3>Akash Thakur</h3>
+                    <p>Amazing tool! I'm impressed by how user-friendly PaperBilder is for educators.</p>
+                </div>
+            </div>
+            <div class="customer-card">
+                <div class="customer-info">
+                    <h3>PushPak Patel</h3>
+                    <p>Highly recommended! This tool saved me a lot of time in exam paper preparation.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row-review row2">
+            <div class="customer-card">
+                <div class="customer-info">
+                    <h3>Abhishek Jaiswal</h3>
+                    <p>Impressive results! PaperBilder is a game-changer for educators and instructors.</p>
+                </div>
+            </div>
+            <div class="customer-card">
+                <div class="customer-info">
+                    <h3>Jaynendra Sharma</h3>
+                    <p>Efficient and effective! PaperBilder made exam paper creation a breeze.</p>
+                </div>
+            </div>
+            <div class="customer-card">
+                <div class="customer-info">
+                    <h3>Chetan Rai</h3>
+                    <p>Outstanding tool! I can't imagine going back to traditional paper creation methods.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    
+    
     <footer>
-        <p>&copy; 2023 Padaku Education Solutions. All rights reserved.</p>
+        <div class="copyright">
+            <div>
+                <p class="copy">&copy; 2023 Padaku Education Solution. All rights received</p>
+            </div>
+            <div class="social-handlers">
+                <i class="bi bi-whatsapp"></i>
+                <i class="bi bi-facebook"></i>
+                <i class="bi bi-instagram"></i>
+                <i class="bi bi-google"></i>
+            </div>
+        </div>
     </footer>
 
     <script>
-        var headmove = document.getElementById('headmove');
-        var headingTexts = ["Huge Question Database ", "Drag and Drop Interface ", "Dynamic Paper Generation "];
-        var i = 1, j = 0;
-        var size = 0;
-        var str;
-        f()
-        function f() {
-            headmove.innerHTML = "";
-            str = headingTexts[i];
-            size = headingTexts[i].length;
-            i = (i + 1) % 3, j = 0;
-            typerWriter();
-        }
+        const hamburger = document.getElementById('hamburger');
+        const menuDiv = document.getElementById('menu-div');
 
-        function typerWriter() {
-            if (j < size) {
-                headmove.innerHTML += str.charAt(j);
-                j++;
-                setTimeout(typerWriter, 100);
-            } else f();
-        }
+        hamburger.addEventListener('click', () => {            
+            menuDiv.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        });
     </script>
      <script>
         function openForm() {
