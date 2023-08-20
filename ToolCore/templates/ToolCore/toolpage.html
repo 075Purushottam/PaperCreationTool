@@ -580,7 +580,7 @@
 
 
     <div class="navbar">
-        <div class="logo"><img src="{% static 'Padaku_small.png' %}" alt="" style="width: 180px;"></div>
+        <div class="logo"><img src="{% static 'paperbuilder.png' %}" alt="" style="width: 180px;"></div>
         <form id="search-form">
             <input type="text" id="search" name="q"
                 placeholder="Search your query here related to questions,chapters and subjects">
@@ -945,7 +945,7 @@
                 var paperSection = document.getElementById('paper-section')
                 updateSerialNumbers(paperSection);
             } else {
-                alert("Both Serial number not found");
+                alert("Both Serial number not found (Note: Merge without heading is not possible try to give heading)");
             }
 
         });
@@ -962,62 +962,67 @@
             const targetheadingSerialNumber = heading_ser + '.';
             const targetSerialNumber1 = ser_1 + '.';
             const ques1 = extractQuestionsByHeading(targetheadingSerialNumber, targetSerialNumber1);
-            console.log('delete or question');
+
+            if(ques1){
+                const parentContainer = document.getElementById("paper-section");
+                const combinedQuestion = document.getElementById(ques1.id);
+
+                // Split the IDs using the "|" separator
+                const questionIds = combinedQuestion.id.split("|");
+
+                // Get the question texts using the <span class="or"> element
+                const questionTexts = combinedQuestion.getElementsByTagName("p")[0].innerHTML.split('<span class="or">OR</span>');
+
+                console.log(questionIds);
+                console.log(questionTexts);
+                var lastSerial = 0;
+                var papersection = document.getElementById('paper-section');
+                lastSerialNumbers(papersection);
+                function lastSerialNumbers(section) {
+                    const questions = section.querySelectorAll('.question');
+                    questions.forEach((question, index) => {
+                        lastSerial = question.querySelector('.serial-number').textContent[0];
+                    });
+                }
+                var nextSerial = parseInt(lastSerial) + 1;
+                if (serial == 0) nextSerial = 0;
+                nextSerial = serial;
+
+                // Create separate question divs and append them to the parent container
+                for (let i = 0; i < questionIds.length; i++) {
+                    const questionDiv = document.createElement("div");
+                    questionDiv.className = "question draggable";
+                    questionDiv.setAttribute('draggable', 'true');
+                    questionDiv.setAttribute('data-index', nextSerial + i);
+
+                    questionDiv.id = questionIds[i];
+
+                    const serialNumberSpan = document.createElement("span");
+                    serialNumberSpan.className = "serial-number";
+                    questionDiv.appendChild(serialNumberSpan);
+                    serialNumberSpan.innerText = nextSerial + i + '.';
+
+                    const questionText = document.createElement("p");
+                    questionText.innerText = questionTexts[i];
+                    questionDiv.appendChild(questionText);
+
+                    const marksSpan = document.createElement("span");
+                    marksSpan.className = "marks";
+                    questionDiv.appendChild(marksSpan);
+                    marksSpan.innerText = '[0]';
+
+                    parentContainer.appendChild(questionDiv);
+
+                }
+
+                // Remove the original combined question div
+                combinedQuestion.parentNode.removeChild(combinedQuestion);
 
 
-            const parentContainer = document.getElementById("paper-section");
-            const combinedQuestion = document.getElementById(ques1.id);
 
-            // Split the IDs using the "|" separator
-            const questionIds = combinedQuestion.id.split("|");
-
-            // Get the question texts using the <span class="or"> element
-            const questionTexts = combinedQuestion.getElementsByTagName("p")[0].innerHTML.split('<span class="or">OR</span>');
-
-            console.log(questionIds);
-            console.log(questionTexts);
-            var lastSerial = 0;
-            var papersection = document.getElementById('paper-section');
-            lastSerialNumbers(papersection);
-            function lastSerialNumbers(section) {
-                const questions = section.querySelectorAll('.question');
-                questions.forEach((question, index) => {
-                    lastSerial = question.querySelector('.serial-number').textContent[0];
-                });
+            }else{
+                alert('Selected question is not in OR');
             }
-            var nextSerial = parseInt(lastSerial) + 1;
-            if (serial == 0) nextSerial = 0;
-            nextSerial = serial;
-
-            // Create separate question divs and append them to the parent container
-            for (let i = 0; i < questionIds.length; i++) {
-                const questionDiv = document.createElement("div");
-                questionDiv.className = "question draggable";
-                questionDiv.setAttribute('draggable', 'true');
-                questionDiv.setAttribute('data-index', nextSerial + i);
-
-                questionDiv.id = questionIds[i];
-
-                const serialNumberSpan = document.createElement("span");
-                serialNumberSpan.className = "serial-number";
-                questionDiv.appendChild(serialNumberSpan);
-                serialNumberSpan.innerText = nextSerial + i + '.';
-
-                const questionText = document.createElement("p");
-                questionText.innerText = questionTexts[i];
-                questionDiv.appendChild(questionText);
-
-                const marksSpan = document.createElement("span");
-                marksSpan.className = "marks";
-                questionDiv.appendChild(marksSpan);
-                marksSpan.innerText = '[0]';
-
-                parentContainer.appendChild(questionDiv);
-            }
-
-            // Remove the original combined question div
-            combinedQuestion.parentNode.removeChild(combinedQuestion);
-
         });
 
 

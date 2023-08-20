@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="{% static 'navbar.css' %}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
@@ -13,16 +15,17 @@
             margin: 0px;
             padding: 0px;
             box-sizing: border-box;
+            
         }
 
         body {
             font-family: Arial, sans-serif;
+            background-color:#0E2954;
         }
         .tooluser_heading{
             color: #f18f4a;
         }
         .container {
-            background-color: rgb(192, 192, 192);
             display: flex;
             justify-content: center;
             background-blend-mode: screen;
@@ -30,7 +33,6 @@
 
         .box {
             content: "";
-            background-color:#0E2954;
             margin-top: 20px;
             border-radius: 5px;
             padding: 20px;
@@ -47,8 +49,9 @@
         label {
             margin: 10px;
             display: block;
-            font-size: 13px;
-            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            color: aliceblue;
         }
 
         input[type="text"],
@@ -182,6 +185,8 @@
 
 <body>
 
+    {%include 'ToolCore/navbar.html'%}
+ 
     <div class="container">
  
         <div class="box">

@@ -61,4 +61,14 @@
   ::placeholder{
     color:#888888; 
   }
-  /* Login Register Page */
+  
+
+  @media screen and (max-width: 736px){
+    .registerContainer{
+      border-radius:7px;
+      width: 80%;
+      height: 80%;
+      text-align: center;
+      padding: 15px;
+    }
+  }

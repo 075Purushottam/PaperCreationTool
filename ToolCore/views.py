@@ -99,8 +99,8 @@ def toolPage(request):
     choices = [(option['id'], option['class_name']) for option in classes]
     form = PaperDetailForm(choices=choices)
     tool_user_id = request.session.get('tool_user_id')
-    user = ToolLogin.objects.filter(tool_id=tool_user_id)
-    context = {'form':form,'user_id':tool_user_id}
+    user = ToolLogin.objects.get(tool_id=tool_user_id)
+    context = {'form':form,'user_id':tool_user_id,'user':user}
     return render(request,'ToolCore/paper-detail-form.html',context)
 
 def bookChapter(request):

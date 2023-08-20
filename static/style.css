@@ -9,7 +9,6 @@ body{
 
     a {
         text-decoration: none;
-        color: aliceblue;
     }
     /* Styling for the overlay */
     .overlay {
@@ -96,65 +95,61 @@ body{
 
 
 nav {
+    background-color: aliceblue;
     display: flex;
     flex-direction: row;
     z-index: 1;
     padding: 20px 0px 20px 0px;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 30px 30px 30px rgba(0.1, 0.1, 0.1, 0.1);
 }
 .logo{
     margin-left: 50px;
 }
+.logo img{
+    width: 180px;
+}
 nav div h1{
     font-size: 32px;
 }
-
-.start-btn{
-  text-decoration: none;
-  color: #333;
-  padding: 16px 20px;
-  border: 1px solid #333;
-  border-radius: 0px;
-}
-
-.start-btn:hover{
-  background-color: #333;
-  color: #fff;
-}
-
 
 .menu,.menu-div {
     display: flex;
     flex-direction: row;
     justify-content: center;
     width: 100%;
+    align-items: center;
+    margin: 0;
 }
 .menu li{
     margin: 2px;
     padding: 12px 26px 12px 26px;
     font-size: 18px;
     font-weight: 600;
-    color: rgb(200, 203, 205);
+    border-radius: 8px 8px 8px 8px;
+    color: rgb(66, 72, 116);
     transition: 0.5s;
 }
 .menu li:hover{
     padding: 12px 26px 12px 26px;
-    background-color: #ffffff28;
+    background-color: rgb(66, 72, 116);
     color: aliceblue;
     border-radius: 8px 8px 8px 8px;
     border-color: #333 #333 #333 #333;
     font-size: 18px;
     font-weight: 600;
-    /* color: #111; */
 }
 .login-btn{
     display: flex;
     flex-direction: row;
     margin-right: 50px;
+    margin-top: auto;
+}
+.username{
     align-items: center;
 }
-.login-btn a,.create-now{
+.login-btn a,.create-now,.start-btn{
     margin: 4px;
     padding: 12px 26px 12px 26px;
     background-color: #DCD6F7;
@@ -164,6 +159,16 @@ nav div h1{
     font-size: 16px;
     font-weight: 600;
     color: #111;
+}
+.login-btn a:hover{
+    background-color: rgb(66, 72, 116);
+    color: aliceblue;
+}
+.create-now:hover,.start-btn:hover{
+    background-color: aliceblue;
+}
+.start-btn{
+    border: none;
 }
 header {
     text-align: center;
@@ -402,6 +407,9 @@ font-size: 24px;
         font-size: 24px;
         color: rgb(66, 72, 116);
     }
+    .logo img{
+        width: 152px;
+    }
 
     .main-description{
         font-size: 34px;
@@ -494,11 +502,11 @@ font-size: 24px;
     }
     .main-description{
         font-size: 34px;
-        margin: 20px 0px;
+        margin: 32px 5px;
     }
     .main-description-p{
         font-size:14px;
-        margin: 20px 0px;
+        margin: 20px 12px;
     }
     .underline{
         font-size:12px;

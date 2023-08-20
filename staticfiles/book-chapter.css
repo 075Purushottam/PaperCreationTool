@@ -1,8 +1,10 @@
 body{
-    background-color: #f2f2f2;
+    /* background-color: #f2f2f2; */
+    background-color: #0E2954;
 }
 .main-heading{
     text-align: center;
+    color: aliceblue;
 }
 li{
     list-style: none;
@@ -18,6 +20,7 @@ li{
 .accordian li .outerlab{
     font-weight:700;
     font-size: 28px;
+    color: #0E2954;
 }
 /* input[type="radio"]{
     display: none;
@@ -50,7 +53,7 @@ li{
     padding: 15px 15px 15px 15px;
 }
 .accordian li{
-    background-color: rgb(131, 127, 127);
+    background-color: aliceblue;
     box-shadow:2px 2px 5px#888888;
     border:1px solid black;
     border-radius: 2px;
